@@ -14,6 +14,7 @@ async fn main() -> std::io::Result<()> {
             .configure(controllers::routes::product_category::init)
             .configure(controllers::routes::order::init)
             .configure(controllers::routes::order_product::init)
+            .configure(controllers::routes::payment::init)
     })
     .bind(("127.0.0.1", 8080))?
     .bind(("127.0.0.1", 443))?
