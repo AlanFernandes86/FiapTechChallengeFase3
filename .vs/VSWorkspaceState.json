@@ -1,16 +1,6 @@
 {
   "ExpandedNodes": [
-    "",
-    "\\src",
-    "\\src\\application",
-    "\\src\\domain",
-    "\\src\\domain\\entities",
-    "\\src\\domain\\repositories",
-    "\\src\\domain\\services",
-    "\\src\\infrastructure",
-    "\\src\\infrastructure\\services",
-    "\\src\\presentation"
+    ""
   ],
-  "SelectedNode": "\\src\\domain\\services\\client_service.rs",
   "PreviewInSolutionExplorer": false
 }

@@ -86,8 +86,7 @@
               "RelativeToolTip": "src\\domain\\mod.rs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAIAAAARAAAA",
               "Icon": "00000000-0000-0000-0000-000000000000.000000|",
-              "WhenOpened": "2024-08-11T17:55:58.552Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-08-11T17:55:58.552Z"
             },
             {
               "$type": "Document",
@@ -99,8 +98,7 @@
               "RelativeToolTip": "src\\domain\\repositories\\client_repository.rs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAUAAAAHAAAA",
               "Icon": "00000000-0000-0000-0000-000000000000.000000|",
-              "WhenOpened": "2024-08-11T14:10:08.921Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-08-11T14:10:08.921Z"
             },
             {
               "$type": "Document",
@@ -112,8 +110,7 @@
               "RelativeToolTip": "src\\domain\\repositories\\mod.rs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "00000000-0000-0000-0000-000000000000.000000|",
-              "WhenOpened": "2024-08-11T14:09:39.364Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-08-11T14:09:39.364Z"
             },
             {
               "$type": "Document",
@@ -123,10 +120,8 @@
               "RelativeDocumentMoniker": "src\\domain\\services\\client_service.rs",
               "ToolTip": "C:\\Apps\\Fiap\\FiapTechChallengeFase1\\src\\domain\\services\\client_service.rs",
               "RelativeToolTip": "src\\domain\\services\\client_service.rs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "00000000-0000-0000-0000-000000000000.000000|",
-              "WhenOpened": "2024-08-11T13:50:22.1Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-08-11T13:50:22.1Z"
             },
             {
               "$type": "Document",
@@ -138,8 +133,7 @@
               "RelativeToolTip": "src\\domain\\services\\mod.rs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAWAAAA",
               "Icon": "00000000-0000-0000-0000-000000000000.000000|",
-              "WhenOpened": "2024-08-11T13:49:46.642Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-08-11T13:49:46.642Z"
             },
             {
               "$type": "Document",
@@ -151,8 +145,7 @@
               "RelativeToolTip": "src\\infrastructure\\services\\client_service.rs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAFAAAA",
               "Icon": "00000000-0000-0000-0000-000000000000.000000|",
-              "WhenOpened": "2024-08-11T14:03:20.956Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-08-11T14:03:20.956Z"
             },
             {
               "$type": "Document",
@@ -164,8 +157,7 @@
               "RelativeToolTip": "src\\infrastructure\\services\\mod.rs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAXAAAA",
               "Icon": "00000000-0000-0000-0000-000000000000.000000|",
-              "WhenOpened": "2024-08-11T14:02:50.72Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-08-11T14:02:50.72Z"
             },
             {
               "$type": "Document",
@@ -177,8 +169,7 @@
               "RelativeToolTip": "src\\domain\\entities\\client.rs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAQAAAABAAAA",
               "Icon": "00000000-0000-0000-0000-000000000000.000000|",
-              "WhenOpened": "2024-08-11T13:56:37.377Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-08-11T13:56:37.377Z"
             },
             {
               "$type": "Document",
@@ -190,8 +181,7 @@
               "RelativeToolTip": "src\\domain\\entities\\mod.rs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAOAAAA",
               "Icon": "00000000-0000-0000-0000-000000000000.000000|",
-              "WhenOpened": "2024-08-11T13:55:32.55Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-08-11T13:55:32.55Z"
             },
             {
               "$type": "Document",
@@ -203,8 +193,7 @@
               "RelativeToolTip": "src\\presentation\\handlers\\mod.rs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "00000000-0000-0000-0000-000000000000.000000|",
-              "WhenOpened": "2024-08-11T13:48:55.832Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-08-11T13:48:55.832Z"
             },
             {
               "$type": "Document",
@@ -216,8 +205,7 @@
               "RelativeToolTip": "src\\presentation\\mod.rs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAIAAAARAAAA",
               "Icon": "00000000-0000-0000-0000-000000000000.000000|",
-              "WhenOpened": "2024-08-11T13:48:27.7Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-08-11T13:48:27.7Z"
             },
             {
               "$type": "Document",
@@ -229,8 +217,7 @@
               "RelativeToolTip": "src\\presentation\\routes\\mod.rs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "00000000-0000-0000-0000-000000000000.000000|",
-              "WhenOpened": "2024-08-11T13:48:33.059Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-08-11T13:48:33.059Z"
             },
             {
               "$type": "Document",
@@ -242,8 +229,7 @@
               "RelativeToolTip": "src\\presentation\\routes\\client.rs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "00000000-0000-0000-0000-000000000000.000000|",
-              "WhenOpened": "2024-08-11T13:48:46.637Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-08-11T13:48:46.637Z"
             },
             {
               "$type": "Document",
@@ -255,8 +241,7 @@
               "RelativeToolTip": "src\\main.rs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAA4AAAAAAAAA",
               "Icon": "00000000-0000-0000-0000-000000000000.000000|",
-              "WhenOpened": "2024-08-10T15:42:00.57Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-08-10T15:42:00.57Z"
             }
           ]
         }
