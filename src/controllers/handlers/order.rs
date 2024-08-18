@@ -1,4 +1,4 @@
-use actix_web::{web, get, put, post, patch, HttpResponse, Responder};
+use actix_web::{web, get, post, patch, HttpResponse, Responder};
 use crate::controllers::models::order::{ GetOrdersQuery, UpdateOrderStatusDTO, CreateOrderDTO };
 
 #[get("/{orderId}")]
