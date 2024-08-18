@@ -4,7 +4,7 @@ use crate::controllers::handlers::product_category::{ get_product_categories, pu
 
 pub fn init(config: &mut web::ServiceConfig) {
     config.service(
-        web::scope("/api/v1/category")
+        web::scope("/api/v1/product_category")
             .service(get_product_categories)
             .service(put_product_category)
     );

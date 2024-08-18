@@ -7,6 +7,6 @@ pub async fn get_product_categories() -> impl Responder {
 }
 
 #[put("")]
-pub async fn put_product_category(client_dto: web::Json<ProductCategoryDTO>) -> impl Responder {
+pub async fn put_product_category(put_product_category_dto: web::Json<ProductCategoryDTO>) -> impl Responder {
     HttpResponse::Ok().json("put_product_category")
 }
