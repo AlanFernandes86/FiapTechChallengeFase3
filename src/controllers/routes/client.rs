@@ -1,5 +1,5 @@
 use actix_web::web;
-use crate::presentation::handlers::client::{ get_client_by_cpf, set_client };
+use crate::controllers::handlers::client::{ get_client_by_cpf, set_client };
 
 pub fn init(config: &mut web::ServiceConfig) {
     config.service(

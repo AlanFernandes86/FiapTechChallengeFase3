@@ -1,6 +1,6 @@
 use actix_web::{App,  HttpServer};
 
-mod presentation;
+mod controllers;
 mod application;
 mod infrastructure;
 mod domain;
@@ -9,7 +9,8 @@ mod domain;
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
-            .configure(presentation::routes::client::init)
+            .configure(controllers::routes::client::init)
+            .configure(controllers::routes::product::init)
     })
     .bind(("127.0.0.1", 8080))?
     .run()

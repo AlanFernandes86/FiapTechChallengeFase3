@@ -3,7 +3,7 @@ use crate::application::client::get_client_by_cpf::GetClientByCpfUseCase;
 use crate::application::client::set_client::SetClientUseCase;
 use crate::infrastructure::repository::client_repository::SqlClientRepository;
 use crate::infrastructure::repository::pool::mssql_pool;
-use crate::presentation::models::client_dto::ClientDTO;
+use crate::controllers::models::client::ClientDTO;
 
 #[get("/{cpf}")]
 pub async fn get_client_by_cpf(path: web::Path<String>) -> impl Responder {
