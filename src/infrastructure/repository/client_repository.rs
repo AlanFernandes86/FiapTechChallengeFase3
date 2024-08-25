@@ -20,16 +20,16 @@ impl MssqlClientRepository {
 #[async_trait]
 impl ClientRepository for MssqlClientRepository {
     async fn get_client_by_cpf(&self, cpf: String) -> Result<Option<Client>, Box<dyn Error>> {
-        let client = sqlx::query_as::<_, DbClient>(
+        let result = sqlx::query_as::<_, DbClient>(
             "SELECT cpf, name, email FROM TechChallenge.dbo.client WHERE cpf = @p1"
         )
         .bind(cpf)
         .fetch_optional(&*self.pool) 
         .await;
         
-        match client {
-            Ok(client) => {
-                match client {
+        match result {
+            Ok(option) => {
+                match option {
                     Some(client) => Ok(Some(client.into())),
                     None => Ok(None)
                 }
@@ -51,17 +51,6 @@ impl ClientRepository for MssqlClientRepository {
         match result {
             Ok(_) => Ok(()),
             Err(e) => Err(Box::new(e)),
-        }
-    }
-}
-
-// Implementando o From trait para o Client
-impl From<DbClient> for Client {
-    fn from(tb_client: DbClient) -> Self {
-        Client {
-            cpf: tb_client.cpf,
-            name: tb_client.name,
-            email: tb_client.email,
         }
     }
 }

@@ -19,12 +19,11 @@ pub async fn get_client_by_cpf(path: web::Path<String>) -> impl Responder {
             // Cria nova instancia do use case
             let use_case = GetClientByCpfUseCase::new(Box::new(repo));
             // Chama o use case
-            let client = use_case.handle(cpf).await;
-
+            let result = use_case.handle(cpf).await;
             // Lida com o resultado e retorna a resposta    
-            match client {
-                Ok(client) => {
-                    match client {
+            match result {
+                Ok(option) => {
+                    match option {
                         Some(client) => HttpResponse::Ok().json(client),
                         None => HttpResponse::NotFound().body("Client not found")
                     }
@@ -44,9 +43,9 @@ pub async fn set_client(client_dto: web::Json<ClientDTO>) -> impl Responder {
         Ok(pool)=> {
             let repo = MssqlClientRepository::new(pool.clone());
             let use_case = SetClientUseCase::new(Box::new(repo));
-            let client = use_case.handle(client).await;
+            let result = use_case.handle(client).await;
         
-            match client {
+            match result {
                 Ok(_) => HttpResponse::Created().finish(),
                 Err(e) => HttpResponse::InternalServerError().body(e.to_string())
             }
