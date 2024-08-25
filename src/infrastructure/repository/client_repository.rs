@@ -6,21 +6,20 @@ use crate::domain::entities::client::Client;
 use crate::domain::repositories::client_repository::ClientRepository;
 use crate::infrastructure::repository::entity::db_client::DbClient;
 
-pub struct SqlClientRepository {
+pub struct MssqlClientRepository {
     pool: Arc<MssqlPool>,
 }
 
-impl SqlClientRepository {
+impl MssqlClientRepository {
     // O método new é definido diretamente na struct
     pub fn new(pool: Arc<MssqlPool>) -> Self {
-        SqlClientRepository { pool }
+        MssqlClientRepository { pool }
     }
 }
 
 #[async_trait]
-impl ClientRepository for SqlClientRepository {
+impl ClientRepository for MssqlClientRepository {
     async fn get_client_by_cpf(&self, cpf: String) -> Result<Option<Client>, Box<dyn Error>> {
-            
         let client = sqlx::query_as::<_, DbClient>(
             "SELECT cpf, name, email FROM TechChallenge.dbo.client WHERE cpf = @p1"
         )

@@ -1,8 +1,8 @@
 use actix_web::{web, get, post, HttpResponse, Responder};
 use crate::application::client::get_client_by_cpf::GetClientByCpfUseCase;
 use crate::application::client::set_client::SetClientUseCase;
-use crate::infrastructure::repository::client_repository::SqlClientRepository;
-use crate::infrastructure::repository::pool::mssql_pool::SqlServerPool;
+use crate::infrastructure::repository::client_repository::MssqlClientRepository;
+use crate::infrastructure::repository::common::mssql_pool::SqlServerPool;
 use crate::controllers::models::client::ClientDTO;
 
 #[get("/{cpf}")]
@@ -15,7 +15,7 @@ pub async fn get_client_by_cpf(path: web::Path<String>) -> impl Responder {
     match arc_pool {
         Ok(pool) => {
             // Cria nova instancia do repositorio
-            let repo = SqlClientRepository::new(pool.clone());
+            let repo = MssqlClientRepository::new(pool.clone());
             // Cria nova instancia do use case
             let use_case = GetClientByCpfUseCase::new(Box::new(repo));
             // Chama o use case
@@ -42,7 +42,7 @@ pub async fn set_client(client_dto: web::Json<ClientDTO>) -> impl Responder {
     let arc_pool = SqlServerPool::get_instance().await;
     match arc_pool {
         Ok(pool)=> {
-            let repo = SqlClientRepository::new(pool.clone());
+            let repo = MssqlClientRepository::new(pool.clone());
             let use_case = SetClientUseCase::new(Box::new(repo));
             let client = use_case.handle(client).await;
         
