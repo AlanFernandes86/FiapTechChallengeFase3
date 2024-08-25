@@ -8,6 +8,7 @@ version = "0.1.0"
 dependencies = [
  "actix-web",
  "async-trait",
+ "once_cell",
  "serde",
  "sqlx",
  "syn 1.0.109",

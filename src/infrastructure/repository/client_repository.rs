@@ -1,4 +1,5 @@
 use std::error::Error;
+use std::sync::Arc;
 use async_trait::async_trait;
 use sqlx::mssql::MssqlPool;
 use crate::domain::entities::client::Client;
@@ -6,12 +7,12 @@ use crate::domain::repositories::client_repository::ClientRepository;
 use crate::infrastructure::repository::entity::db_client::DbClient;
 
 pub struct SqlClientRepository {
-    pool: MssqlPool,
+    pool: Arc<MssqlPool>,
 }
 
 impl SqlClientRepository {
     // O método new é definido diretamente na struct
-    pub fn new(pool: MssqlPool) -> Self {
+    pub fn new(pool: Arc<MssqlPool>) -> Self {
         SqlClientRepository { pool }
     }
 }
@@ -24,7 +25,7 @@ impl ClientRepository for SqlClientRepository {
             "SELECT cpf, name, email FROM TechChallenge.dbo.client WHERE cpf = @p1"
         )
         .bind(cpf)
-        .fetch_optional(&self.pool) 
+        .fetch_optional(&*self.pool) 
         .await;
         
         match client {
@@ -45,7 +46,7 @@ impl ClientRepository for SqlClientRepository {
         .bind(client.cpf)
         .bind(client.name)
         .bind(client.email)
-        .execute(&self.pool)
+        .execute(&*self.pool)
         .await;
 
         match result {
@@ -55,7 +56,7 @@ impl ClientRepository for SqlClientRepository {
     }
 }
 
-// Implementando o From trait for Client
+// Implementando o From trait para o Client
 impl From<DbClient> for Client {
     fn from(tb_client: DbClient) -> Self {
         Client {
