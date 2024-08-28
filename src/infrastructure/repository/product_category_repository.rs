@@ -54,7 +54,7 @@ impl ProductCategoryRepository for MssqlProductCategoryRepository {
         }
     }
 
-    async fn delete_product_category(&self, id: i32) -> Result<(), Box<dyn Error>> {
+    async fn delete_product_category(&self, id: i32) -> Result<u64, Box<dyn Error>> {
         let result = sqlx::query(
             "DELETE FROM TechChallenge.dbo.product_category WHERE id = @p1"
         )
@@ -63,7 +63,7 @@ impl ProductCategoryRepository for MssqlProductCategoryRepository {
         .await;
 
         match result {
-            Ok(_) => Ok(()),
+            Ok(res) => Ok(res.rows_affected()),
             Err(e) => Err(Box::new(e)),
         }
     }
