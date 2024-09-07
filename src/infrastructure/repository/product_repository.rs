@@ -20,9 +20,10 @@ impl MssqlProductRepository {
 impl ProductRepository for MssqlProductRepository {
     async fn get_products_by_categories(&self, product_category_id: i32) -> Result<Option<Vec<Product>>, Box<dyn Error>> {
         let result = sqlx::query_as::<_, DbProduct>(
-            "SELECT id, name, description, price, product_category_id, updated_at, created_at 
-            FROM TechChallenge.dbo.product 
-            WHERE product_category_id = @p1"
+            "SELECT p.id, p.name, p.description, p.price, p.image_url, p.product_category_id, pc.name as product_category_name, pc.description as product_category_description
+            FROM TechChallenge.dbo.product p
+            JOIN TechChallenge.dbo.product_category pc ON p.product_category_id = pc.id
+            WHERE p.product_category_id = @p1"
         )
         .bind(product_category_id)
         .fetch_all(&*self.pool)
@@ -61,7 +62,7 @@ impl ProductRepository for MssqlProductRepository {
         .bind(product.name)
         .bind(product.description)
         .bind(product.price)
-        .bind(product.product_category_id)
+        .bind(product.product_category.id)
         .execute(&*self.pool)
         .await;
 
