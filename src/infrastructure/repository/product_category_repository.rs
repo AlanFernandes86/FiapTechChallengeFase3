@@ -40,7 +40,13 @@ impl ProductCategoryRepository for MssqlProductCategoryRepository {
 
     async fn put_product_category(&self, product_category: ProductCategory) -> Result<(), Box<dyn Error>> {
         let result = sqlx::query(
-            "INSERT INTO TechChallenge.dbo.product_category (id, name, description, updated_at, created_at) VALUES (@p1, @p2, @p3, GETDATE(), GETDATE())"
+            "MERGE INTO TechChallenge.dbo.product_category AS target
+            USING (VALUES (@p1, @p2, @p3, GETDATE(), GETDATE())) AS source (id, name, description, updated_at, created_at)
+            ON target.id = source.id
+            WHEN MATCHED THEN
+                UPDATE SET target.name = source.name, target.description = source.description, target.updated_at = source.updated_at
+            WHEN NOT MATCHED THEN
+                INSERT (id, name, description, updated_at, created_at) VALUES (source.id, source.name, source.description, source.updated_at, source.created_at);"
         )
         .bind(product_category.id)
         .bind(product_category.name)
