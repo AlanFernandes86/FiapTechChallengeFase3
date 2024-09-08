@@ -7,7 +7,6 @@ pub struct DbProductCategory {
     pub description: String
 }
 
-// Implementando o From trait para o Client
 impl From<DbProductCategory> for ProductCategory {
     fn from(tb_product_category: DbProductCategory) -> Self {
         ProductCategory {

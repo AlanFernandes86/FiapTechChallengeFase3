@@ -18,7 +18,7 @@ impl MssqlProductRepository {
 
 #[async_trait]
 impl ProductRepository for MssqlProductRepository {
-    async fn get_products_by_categories(&self, product_category_id: i32) -> Result<Option<Vec<Product>>, Box<dyn Error>> {
+    async fn get_products_by_category(&self, product_category_id: i32) -> Result<Option<Vec<Product>>, Box<dyn Error>> {
         let result = sqlx::query_as::<_, DbProduct>(
             "SELECT p.id, p.name, p.description, p.price, p.image_url, p.product_category_id, pc.name as product_category_name, pc.description as product_category_description
             FROM TechChallenge.dbo.product p
