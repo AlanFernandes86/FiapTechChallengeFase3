@@ -12,5 +12,5 @@ pub struct ProductDTO {
 
 #[derive(Deserialize)]
 pub struct ProductQuery {
-    category_id: i32,
+    pub category_id: i32,
 }

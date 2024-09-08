@@ -1,9 +1,30 @@
 use actix_web::{web, get, post, patch, HttpResponse, Responder};
-use crate::controllers::models::order::{ GetOrdersQuery, UpdateOrderStatusDTO, CreateOrderDTO };
+use crate::{
+    application::order::get_order_by_id::GetOrderByIdUseCase,
+    controllers::models::order::{ CreateOrderDTO, GetOrdersQuery, UpdateOrderStatusDTO },
+    infrastructure::repository::{common::mssql_pool::SqlServerPool, order_repository::MssqlOrderRepository}};
 
 #[get("/{orderId}")]
-pub async fn get_order_by_id(path: web::Path<String>) -> impl Responder {
-    HttpResponse::Ok().json("get_order_by_id")
+pub async fn get_order_by_id(path: web::Path<i32>) -> impl Responder {
+    let order_id = path.into_inner();
+    let arc_pool = SqlServerPool::get_instance().await;    
+    match arc_pool {
+        Ok(pool) => {
+            let repo = MssqlOrderRepository::new(pool.clone());
+            let use_case = GetOrderByIdUseCase::new(Box::new(repo));
+            let result = use_case.handle(order_id).await;
+            match result {
+                Ok(option) => {
+                    match option {
+                        Some(order) => HttpResponse::Ok().json(order),
+                        None => HttpResponse::BadRequest().body(format!("No order found with the given id {order_id}"))
+                    }
+                },
+                Err(e) => HttpResponse::InternalServerError().body(format!("Internal server error: [{e}]"))
+            }
+        },
+        Err(_) => return HttpResponse::InternalServerError().body("Database connection error")
+    }
 }
 
 #[get("")]

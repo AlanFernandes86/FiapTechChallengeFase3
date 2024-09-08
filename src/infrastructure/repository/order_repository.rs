@@ -32,9 +32,9 @@ impl MssqlOrderRepository {
                 op.updated_at,
                 op.created_at
             FROM
-                order_products op
-                JOIN products p ON op.product_id = p.id
-                JOIN product_categories pc ON p.product_category_id = pc.id
+                TechChallenge.dbo.order_products op
+                JOIN TechChallenge.dbo.products p ON op.product_id = p.id
+                JOIN TechChallenge.dbo.product_categories pc ON p.product_category_id = pc.id
             WHERE
                 op.order_id = @p1
             "#
@@ -68,13 +68,11 @@ impl OrderRepository for MssqlOrderRepository {
                 c.name AS client_name,
                 c.email AS client_email,
                 os.id AS order_status_id,
-                os.name AS order_status_name,
-                o.updated_at,
-                o.created_at
+                os.name AS order_status_name
             FROM
-                orders o
-                JOIN client c ON o.client_id = c.id
-                JOIN order_status os ON o.order_status_id = os.id
+                TechChallenge.dbo.[order] o
+                JOIN TechChallenge.dbo.client c ON o.client_cpf = c.cpf
+                JOIN TechChallenge.dbo.order_status os ON o.order_status_id = os.id
             WHERE
                 o.id = @p1
             "#
@@ -115,9 +113,9 @@ impl OrderRepository for MssqlOrderRepository {
                 o.updated_at,
                 o.created_at
             FROM
-                orders o
-                JOIN client c ON o.client_id = c.id
-                JOIN order_status os ON o.order_status_id = os.id
+                TechChallenge.dbo.[order] o
+                JOIN TechChallenge.dbo.client c ON o.client_cpf = c.cpf
+                JOIN TechChallenge.dbo.order_status os ON o.order_status_id = os.id
             WHERE
                 o.order_status_id IN ({})
             "#,

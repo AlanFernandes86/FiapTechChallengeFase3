@@ -1,4 +1,3 @@
-use chrono::NaiveDateTime;
 use crate::domain::entities::{client::Client, order::{Order, OrderProduct, OrderStatus}, product_category::ProductCategory};
 
 #[derive(sqlx::FromRow)]
@@ -8,7 +7,7 @@ pub struct DbOrder {
     pub client_name: String,
     pub client_email: String,
     pub order_status_id: i32,
-    pub order_status_name: String,
+    pub order_status_name: String
     // pub updated_at: NaiveDateTime,
     // pub created_at: NaiveDateTime,
 }
@@ -44,8 +43,8 @@ impl From<DbOrderProduct> for OrderProduct {
                 name: db_order_product.product_category_name,
                 description: db_order_product.product_category_description
             },
-            updated_at: NaiveDateTime::from_timestamp(0, 0),
-            created_at: NaiveDateTime::from_timestamp(0, 0)
+            // updated_at: NaiveDateTime::from_timestamp(0, 0),
+            // created_at: NaiveDateTime::from_timestamp(0, 0)
         }
     }
 }
@@ -65,8 +64,6 @@ impl From<DbOrder> for Order {
             },
             total: 0.0f64,
             order_products: vec![],
-            updated_at: NaiveDateTime::from_timestamp(0, 0),
-            created_at: NaiveDateTime::from_timestamp(0, 0),
             // updated_at: db_order.updated_at,
             // created_at: db_order.created_at
         }
