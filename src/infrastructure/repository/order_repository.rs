@@ -96,11 +96,12 @@ impl OrderRepository for MssqlOrderRepository {
     async fn get_orders_by_status(&self, order_status_list: Vec<i32>) -> Result<Option<Vec<Order>>, Box<dyn Error>> {
         let placeholders = order_status_list
         .iter()
-        .map(|_| "?")
+        .enumerate() // Adiciona o índice ao iterador
+        .map(|(i, _)| format!("@p{}", i + 1))
         .collect::<Vec<_>>()
         .join(", ");
 
-        // Criar a query SQL dinamicamente.
+        // Cria a query SQL com base na lista de status
         let query = format!(
             r#"
             SELECT

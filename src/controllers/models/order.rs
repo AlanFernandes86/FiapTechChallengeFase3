@@ -2,13 +2,13 @@ use serde::Deserialize;
 
 #[derive(Deserialize, Debug)]
 pub struct GetOrdersQuery {
-    order_status: i32
+    pub order_status_id: i32
 }
 
 #[derive(serde::Deserialize, Debug)]
 pub struct UpdateOrderStatusDTO {
     pub order_id: i32,
-    pub order_status: i32
+    pub order_status_id: i32
 }
 
 #[derive(serde::Deserialize, Debug)]

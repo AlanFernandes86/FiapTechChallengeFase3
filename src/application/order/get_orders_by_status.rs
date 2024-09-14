@@ -1,11 +1,11 @@
 use std::error::Error;
 use crate::domain::{entities::order::Order, enums::order_status::OrderStatus, repositories::order_repository::OrderRepository};
 
-pub struct GetOrdersByStatus {
+pub struct GetOrdersByStatusUseCase {
     order_repository: Box<dyn OrderRepository>,
 }
 
-impl GetOrdersByStatus {
+impl GetOrdersByStatusUseCase {
     pub fn new(order_repository: Box<dyn OrderRepository>) -> Self {
         Self {
             order_repository,
