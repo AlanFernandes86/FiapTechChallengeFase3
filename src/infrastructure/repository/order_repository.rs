@@ -32,9 +32,9 @@ impl MssqlOrderRepository {
                 op.updated_at,
                 op.created_at
             FROM
-                TechChallenge.dbo.order_products op
-                JOIN TechChallenge.dbo.products p ON op.product_id = p.id
-                JOIN TechChallenge.dbo.product_categories pc ON p.product_category_id = pc.id
+                TechChallenge.dbo.order_product op
+                JOIN TechChallenge.dbo.product p ON op.product_id = p.id
+                JOIN TechChallenge.dbo.product_category pc ON p.product_category_id = pc.id
             WHERE
                 op.order_id = @p1
             "#
@@ -153,9 +153,9 @@ impl OrderRepository for MssqlOrderRepository {
     async fn create_order(&self, order: Order) -> Result<(), Box<dyn Error>> {
         let mut transaction = self.pool.begin().await?;
 
-        let result = sqlx::query_as::<_, DbOrder> (
+        let result: Result<i32, sqlx::Error> = sqlx::query_scalar(
             r#"
-            INSERT INTO orders (order_status_id, client_cpf, client_name, updated_at, created_at)
+            INSERT INTO TechChallenge.dbo.[order] (order_status_id, client_cpf, client_name, updated_at, created_at)
             OUTPUT INSERTED.id
             VALUES (
                 @p1,
@@ -173,11 +173,11 @@ impl OrderRepository for MssqlOrderRepository {
         .await;
 
         match result {
-            Ok(db_order) => {
+            Ok(db_order_id) => {
                 for order_product in &order.order_products {
                     let _ = sqlx::query(
                         r#"
-                        INSERT INTO order_products (order_id, product_id, quantity, price, updated_at, created_at)
+                        INSERT INTO TechChallenge.dbo.[order_product] (order_id, product_id, quantity, price, updated_at, created_at)
                         VALUES (
                             @p1,
                             @p2,
@@ -188,7 +188,7 @@ impl OrderRepository for MssqlOrderRepository {
                         )
                         "#
                     )
-                    .bind(db_order.id)
+                    .bind(db_order_id)
                     .bind(order_product.product_id)
                     .bind(order_product.quantity)
                     .bind(order_product.price)
@@ -208,7 +208,7 @@ impl OrderRepository for MssqlOrderRepository {
     async fn update_order_status(&self, order_id: i32, order_status_id: i32) -> Result<(), Box<dyn Error>> {
         let result = sqlx::query(
             r#"
-            UPDATE orders
+            UPDATE TechChallenge.dbo.[order]
             SET order_status_id = @p1
             WHERE id = @p2
             "#
