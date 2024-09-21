@@ -12,6 +12,14 @@ pub struct Order {
     // pub created_at: chrono::NaiveDateTime
 }
 
+impl Order {
+    pub fn is_this_valid_status_update(&self, id: i32) -> bool {
+        self.order_status.id != id
+        && self.order_status.id < id
+        && crate::domain::enums::order_status::OrderStatus::from_id(id).is_ok()
+    }
+}
+
 #[derive(serde::Serialize, Debug)]
 pub struct OrderStatus {
     pub id: i32,

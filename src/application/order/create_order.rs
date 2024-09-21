@@ -12,7 +12,7 @@ impl CreateOrderUseCase {
         }
     }
 
-    pub async fn handle(&self, order: Order) -> Result<(), Box<dyn Error>> {
+    pub async fn handle(&self, order: Order) -> Result<i32, Box<dyn Error>> {
         if order.order_status.id != OrderStatus::Created as i32 {
             return Err("order_status_id invalid! It is only possible to create orders with the status CREATED.".into());
         }

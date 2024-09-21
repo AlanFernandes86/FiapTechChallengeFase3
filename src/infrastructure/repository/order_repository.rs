@@ -209,11 +209,12 @@ impl OrderRepository for MssqlOrderRepository {
         }
     }
 
-    async fn update_order_status(&self, order_id: i32, order_status_id: i32) -> Result<Order, Box<dyn Error>> {
+    async fn update_order_status(&self, order_id: i32, order_status_id: i32) -> Result<(), Box<dyn Error>> {
         let result = sqlx::query(
             r#"
             UPDATE TechChallenge.dbo.[order]
-            SET order_status_id = @p1
+            SET order_status_id = @p1,
+            updated_at = GETDATE()
             WHERE id = @p2
             "#
         )
@@ -223,13 +224,7 @@ impl OrderRepository for MssqlOrderRepository {
         .await;
 
         match result {
-            Ok(_) => {
-                let order = self.get_order_by_id(order_id).await?;
-                match order {
-                    Some(order) => Ok(order),
-                    None => Err(Box::new(sqlx::Error::RowNotFound))
-                }
-            },
+            Ok(_) => Ok(()),
             Err(e) => Err(Box::new(e)),            
         }
     }

@@ -1,8 +1,21 @@
 use actix_web::{web, get, post, patch, HttpResponse, Responder};
 use crate::{
-    application::order::{create_order::CreateOrderUseCase, get_order_by_id::GetOrderByIdUseCase, get_orders_by_status::GetOrdersByStatusUseCase, update_order_status::UpdateOrderStatusUseCase},
-    controllers::models::order::{ CreateOrderDTO, GetOrdersQuery, UpdateOrderStatusDTO },
-    infrastructure::repository::{common::mssql_pool::SqlServerPool, order_repository::MssqlOrderRepository}};
+    application::order::{
+        create_order::CreateOrderUseCase,
+        get_order_by_id::GetOrderByIdUseCase,
+        get_orders_by_status::GetOrdersByStatusUseCase,
+        update_order_status::UpdateOrderStatusUseCase
+    }, 
+    controllers::models::order::{ 
+        CreateOrderDTO,
+        GetOrdersQuery,
+        UpdateOrderStatusDTO 
+    }, 
+    domain::errors::invalid_order_status_update_error::InvalidOrderStatusUpdateError,
+    infrastructure::repository::{
+        common::mssql_pool::SqlServerPool,
+        order_repository::MssqlOrderRepository
+    }};
 
 #[get("/{orderId}")]
 pub async fn get_order_by_id(path: web::Path<i32>) -> impl Responder {
@@ -61,7 +74,7 @@ pub async fn create_order(create_order_dto: web::Json<CreateOrderDTO>) -> impl R
             let result = use_case.handle(order).await;
         
             match result {
-                Ok(_) => HttpResponse::Created().finish(),
+                Ok(created_order_id) => HttpResponse::Created().json(serde_json::json!({ "created_order_id": created_order_id })),
                 Err(e) => HttpResponse::InternalServerError().body(format!("Internal server error: {e}"))
             }
         },
@@ -79,8 +92,23 @@ pub async fn update_order_status(update_status_dto: web::Json<UpdateOrderStatusD
             let use_case = UpdateOrderStatusUseCase::new(Box::new(repo));
             let result = use_case.handle(update_status_dto.order_id, update_status_dto.order_status_id).await;
             match result {
-                Ok(_) => HttpResponse::Ok().finish(),
-                Err(e) => HttpResponse::InternalServerError().body(format!("Internal server error: {e}"))
+                Ok(updated_order) => 
+                    match updated_order {
+                        Some(_) => HttpResponse::Ok().finish(),
+                        None => HttpResponse::BadRequest().body(
+                            format!(
+                            "No order found with the given id [{0}].",
+                            update_status_dto.order_id
+                            )
+                        )
+                    },
+                Err(e) => {
+                    if let Some(_invalid_status) = e.downcast_ref::<InvalidOrderStatusUpdateError>() {
+                        HttpResponse::BadRequest().body(e.to_string())
+                    } else {
+                        HttpResponse::InternalServerError().body(format!("Internal server error: {e}"))
+                    }
+                }
             }
         },
         Err(_) => return HttpResponse::InternalServerError().body("Database connection error")
