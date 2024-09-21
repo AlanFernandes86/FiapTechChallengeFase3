@@ -1,11 +1,11 @@
 use std::error::Error;
 use crate::domain::{entities::product::Product, repositories::product_repository::ProductRepository};
 
-pub struct PutProductsUseCase {
+pub struct PutProductUseCase {
     product_repository: Box<dyn ProductRepository>,
 }
 
-impl PutProductsUseCase {
+impl PutProductUseCase {
     pub fn new(product_repository: Box<dyn ProductRepository>) -> Self {
         Self {
             product_repository,

@@ -40,7 +40,7 @@ pub async fn put_product_category(put_product_category_dto: web::Json<ProductCat
             let result = use_case.handle(product_category).await;
         
             match result {
-                Ok(_) => HttpResponse::Created().finish(),
+                Ok(_) => HttpResponse::Ok().finish(),
                 Err(e) => HttpResponse::InternalServerError().body(e.to_string())
             }
         },

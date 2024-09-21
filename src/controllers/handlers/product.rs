@@ -1,9 +1,18 @@
 use actix_web::{web, get, put, HttpResponse, Responder};
 use crate::{
-    application::product::get_products_by_category::GetProductsByCategoryUseCase,
-    controllers::models::product::{ ProductDTO, ProductQuery },
-    infrastructure::repository::{common::mssql_pool::SqlServerPool,
-    product_repository::MssqlProductRepository}};
+    application::product::{
+        get_products_by_category::GetProductsByCategoryUseCase, 
+        put_product::PutProductUseCase
+    },
+    controllers::models::product::{
+            ProductDTO,
+            ProductQuery
+        },
+        infrastructure::repository::{
+            common::mssql_pool::SqlServerPool,
+            product_repository::MssqlProductRepository
+        }
+};
 
 #[get("")]
 pub async fn get_product_by_category_id(category: web::Query<ProductQuery>) -> impl Responder {
@@ -30,5 +39,19 @@ pub async fn get_product_by_category_id(category: web::Query<ProductQuery>) -> i
 
 #[put("")]
 pub async fn put_product(product_dto: web::Json<ProductDTO>) -> impl Responder {
-    HttpResponse::Ok().json("put_product")
+    let product = product_dto.into_inner().into();
+    let arc_pool = SqlServerPool::get_instance().await;
+    match arc_pool {
+        Ok(pool)=> {
+            let repo = MssqlProductRepository::new(pool.clone());
+            let use_case = PutProductUseCase::new(Box::new(repo));
+            let result = use_case.handle(product).await;
+        
+            match result {
+                Ok(_) => HttpResponse::Ok().finish(),
+                Err(e) => HttpResponse::InternalServerError().body(e.to_string())
+            }
+        },
+        Err(_) => return HttpResponse::InternalServerError().body("Database connection error")
+    }
 }

@@ -15,7 +15,7 @@ pub struct DbProduct {
 impl From<DbProduct> for Product {
     fn from(db_product: DbProduct) -> Self {
         Product {
-            id: db_product.id,
+            id: Some(db_product.id),
             name: db_product.name,
             description: db_product.description,
             price: db_product.price,

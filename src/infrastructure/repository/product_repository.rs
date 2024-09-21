@@ -45,7 +45,7 @@ impl ProductRepository for MssqlProductRepository {
     async fn put_product(&self, product: Product) -> Result<(), Box<dyn Error>> {
         let result = sqlx::query(
             "MERGE INTO TechChallenge.dbo.product AS target
-            USING (VALUES (@p1, @p2, @p3, @p4, @p5, GETDATE(), GETDATE())) AS source (id, name, description, price, product_category_id, updated_at, created_at)
+            USING (VALUES (@p1, @p2, @p3, @p4, @p5, @p6, GETDATE(), GETDATE())) AS source (id, name, description, price, product_category_id, image_url, updated_at, created_at)
             ON target.id = source.id
             WHEN MATCHED THEN
                 UPDATE SET
@@ -53,16 +53,18 @@ impl ProductRepository for MssqlProductRepository {
                     target.description = source.description,
                     target.price = source.price,
                     target.product_category_id = source.product_category_id,
+                    target.image_url = source.image_url,
                     target.updated_at = source.updated_at
             WHEN NOT MATCHED THEN
-                INSERT (id, name, description, price, product_category_id, updated_at, created_at)
-                VALUES (source.id, source.name, source.description, source.price, source.product_category_id, source.updated_at, source.created_at);"
+                INSERT (name, description, price, product_category_id, image_url, updated_at, created_at)
+                VALUES (source.name, source.description, source.price, source.product_category_id, source.image_url, source.updated_at, source.created_at);"
         )
         .bind(product.id)
         .bind(product.name)
         .bind(product.description)
         .bind(product.price)
         .bind(product.product_category.id)
+        .bind(product.image_url)
         .execute(&*self.pool)
         .await;
 
