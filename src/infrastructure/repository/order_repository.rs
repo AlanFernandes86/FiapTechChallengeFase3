@@ -64,6 +64,7 @@ impl OrderRepository for MssqlOrderRepository {
             r#"
             SELECT
                 o.id,
+                o.client_name AS order_client_name,
                 c.cpf AS client_cpf,
                 c.name AS client_name,
                 c.email AS client_email,
@@ -85,7 +86,8 @@ impl OrderRepository for MssqlOrderRepository {
             Ok(Some(db_order)) => {
                 let order_products = self.get_order_products(order_id).await?;
                 let mut domain_order: Order = db_order.into();
-                domain_order.order_products = order_products;        
+                domain_order.order_products = order_products;
+                domain_order.total = domain_order.order_products.iter().map(|op| op.price * op.quantity as f64).sum();       
                 Ok(Some(domain_order))
             },
             Ok(None) => Ok(None),
@@ -106,6 +108,7 @@ impl OrderRepository for MssqlOrderRepository {
             r#"
             SELECT
                 o.id,
+                o.client_name AS order_client_name,
                 c.cpf AS client_cpf,
                 c.name AS client_name,
                 c.email AS client_email,
@@ -142,6 +145,7 @@ impl OrderRepository for MssqlOrderRepository {
                     for domain_order in &mut domain_orders {
                         let order_products = self.get_order_products(domain_order.id).await?;
                         domain_order.order_products = order_products;
+                        domain_order.total = domain_order.order_products.iter().map(|op| op.price * op.quantity as f64).sum();
                     }
                     Ok(Some(domain_orders))
                 }
@@ -150,7 +154,7 @@ impl OrderRepository for MssqlOrderRepository {
         }
     }
 
-    async fn create_order(&self, order: Order) -> Result<(), Box<dyn Error>> {
+    async fn create_order(&self, order: Order) -> Result<i32, Box<dyn Error>> {
         let mut transaction = self.pool.begin().await?;
 
         let result: Result<i32, sqlx::Error> = sqlx::query_scalar(
@@ -168,7 +172,7 @@ impl OrderRepository for MssqlOrderRepository {
         )
         .bind(order.order_status.id)
         .bind(order.client.cpf)
-        .bind(order.client.name)
+        .bind(order.order_client_name)
         .fetch_one(&mut transaction)
         .await;
 
@@ -196,7 +200,7 @@ impl OrderRepository for MssqlOrderRepository {
                     .await?;
                 }
                 transaction.commit().await?;
-                Ok(())
+                Ok(db_order_id)
             },
             Err(e) => {
                 transaction.rollback().await?;
@@ -205,7 +209,7 @@ impl OrderRepository for MssqlOrderRepository {
         }
     }
 
-    async fn update_order_status(&self, order_id: i32, order_status_id: i32) -> Result<(), Box<dyn Error>> {
+    async fn update_order_status(&self, order_id: i32, order_status_id: i32) -> Result<Order, Box<dyn Error>> {
         let result = sqlx::query(
             r#"
             UPDATE TechChallenge.dbo.[order]
@@ -219,7 +223,13 @@ impl OrderRepository for MssqlOrderRepository {
         .await;
 
         match result {
-            Ok(_) => Ok(()),
+            Ok(_) => {
+                let order = self.get_order_by_id(order_id).await?;
+                match order {
+                    Some(order) => Ok(order),
+                    None => Err(Box::new(sqlx::Error::RowNotFound))
+                }
+            },
             Err(e) => Err(Box::new(e)),            
         }
     }

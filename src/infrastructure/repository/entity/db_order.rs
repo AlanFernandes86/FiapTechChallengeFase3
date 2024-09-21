@@ -4,6 +4,7 @@ use crate::domain::entities::{client::Client, order::{Order, OrderProduct, Order
 pub struct DbOrder {
     pub id: i32,
     pub client_cpf: String,
+    pub order_client_name: String,
     pub client_name: String,
     pub client_email: String,
     pub order_status_id: i32,
@@ -53,6 +54,7 @@ impl From<DbOrder> for Order {
     fn from(db_order: DbOrder) -> Self {
         Order {
             id: db_order.id,
+            order_client_name: db_order.order_client_name,
             client: Client {
                 cpf: db_order.client_cpf,
                 name: db_order.client_name,

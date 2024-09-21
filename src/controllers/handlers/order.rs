@@ -1,6 +1,6 @@
 use actix_web::{web, get, post, patch, HttpResponse, Responder};
 use crate::{
-    application::order::{create_order::CreateOrderUseCase, get_order_by_id::GetOrderByIdUseCase, get_orders_by_status::GetOrdersByStatusUseCase},
+    application::order::{create_order::CreateOrderUseCase, get_order_by_id::GetOrderByIdUseCase, get_orders_by_status::GetOrdersByStatusUseCase, update_order_status::UpdateOrderStatusUseCase},
     controllers::models::order::{ CreateOrderDTO, GetOrdersQuery, UpdateOrderStatusDTO },
     infrastructure::repository::{common::mssql_pool::SqlServerPool, order_repository::MssqlOrderRepository}};
 
@@ -71,5 +71,18 @@ pub async fn create_order(create_order_dto: web::Json<CreateOrderDTO>) -> impl R
 
 #[patch("")]
 pub async fn update_order_status(update_status_dto: web::Json<UpdateOrderStatusDTO>) -> impl Responder {
-    HttpResponse::Ok().json("update_order_status")
+    let update_status_dto = update_status_dto.into_inner();
+    let arc_pool = SqlServerPool::get_instance().await;
+    match arc_pool {
+        Ok(pool) => {
+            let repo = MssqlOrderRepository::new(pool.clone());
+            let use_case = UpdateOrderStatusUseCase::new(Box::new(repo));
+            let result = use_case.handle(update_status_dto.order_id, update_status_dto.order_status_id).await;
+            match result {
+                Ok(_) => HttpResponse::Ok().finish(),
+                Err(e) => HttpResponse::InternalServerError().body(format!("Internal server error: {e}"))
+            }
+        },
+        Err(_) => return HttpResponse::InternalServerError().body("Database connection error")
+    }
 }

@@ -31,13 +31,14 @@ impl From<CreateOrderDTO> for Order {
     fn from(client_dto: CreateOrderDTO) -> Self {
         Order {
             id: 0,
+            order_client_name: client_dto.client_name,
             order_status: crate::domain::entities::order::OrderStatus {
                 id: crate::domain::enums::order_status::OrderStatus::Created as i32,
                 name: format!("{:?}", crate::domain::enums::order_status::OrderStatus::Created)
             },
             client: Client {
                 cpf: client_dto.client_cpf,
-                name: client_dto.client_name,
+                name: "".to_string(),
                 email: "".to_string(),
             },
             order_products: client_dto.products.into_iter().map(|product| OrderProduct {
