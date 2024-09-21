@@ -6,7 +6,7 @@ pub enum OrderStatus {
     Ready = 8,
     Completed = 16,
     Cancelled = 32,
-    Active = 14
+    Active = 14 // only for search purposes [Received, InPreparation, Ready]
 }
 
 impl OrderStatus {
@@ -18,7 +18,6 @@ impl OrderStatus {
             8 => Ok(OrderStatus::Ready),
             16 => Ok(OrderStatus::Completed),
             32 => Ok(OrderStatus::Cancelled),
-            14 => Ok(OrderStatus::Active),
             _ => Err(format!("OrderStatus with id [{}] does not exist.", id))     
         }
     }

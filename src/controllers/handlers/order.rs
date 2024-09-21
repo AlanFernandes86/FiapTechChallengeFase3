@@ -30,7 +30,7 @@ pub async fn get_order_by_id(path: web::Path<i32>) -> impl Responder {
                 Ok(option) => {
                     match option {
                         Some(order) => HttpResponse::Ok().json(order),
-                        None => HttpResponse::BadRequest().body(format!("No order found with the given id {order_id}"))
+                        None => HttpResponse::NotFound().body(format!("No order found with the given id {order_id}"))
                     }
                 },
                 Err(_) => HttpResponse::InternalServerError().body("Internal server error")
@@ -53,7 +53,7 @@ pub async fn get_orders(get_orders_query: web::Query<GetOrdersQuery>) -> impl Re
                 Ok(option) => {
                     match option {
                         Some(order_list) => HttpResponse::Ok().json(order_list),
-                        None => HttpResponse::BadRequest().body(format!("No order found with the given status_id {order_status_id}"))
+                        None => HttpResponse::NotFound().body(format!("No order found with the given status_id {order_status_id}"))
                     }
                 },
                 Err(e) => HttpResponse::InternalServerError().body(format!("Internal server error: {e}"))

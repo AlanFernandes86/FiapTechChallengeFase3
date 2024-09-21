@@ -18,7 +18,7 @@ pub async fn get_product_by_category_id(category: web::Query<ProductQuery>) -> i
                 Ok(option) => {
                     match option {
                         Some(vec_product) => HttpResponse::Ok().json(vec_product),
-                        None => HttpResponse::BadRequest().body(format!("No products found with the given category id {category_id}"))
+                        None => HttpResponse::NotFound().body(format!("No products found with the given category id {category_id}"))
                     }
                 },
                 Err(_) => HttpResponse::InternalServerError().body("Internal server error")
