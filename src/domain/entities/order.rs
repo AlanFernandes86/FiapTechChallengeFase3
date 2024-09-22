@@ -1,4 +1,4 @@
-use super::{client::Client, product_category::ProductCategory};
+use super::{client::Client, order_product::OrderProduct};
 
 #[derive(serde::Serialize, Debug)]
 pub struct Order {
@@ -18,24 +18,14 @@ impl Order {
         && self.order_status.id < id
         && crate::domain::enums::order_status::OrderStatus::from_id(id).is_ok()
     }
+
+    pub fn calculate_total(&self) -> f64 {
+        self.order_products.iter().fold(0.0, |acc, op| acc + op.price * op.quantity as f64)
+    }
 }
 
 #[derive(serde::Serialize, Debug)]
 pub struct OrderStatus {
     pub id: i32,
     pub name: String
-}
-
-#[derive(serde::Serialize, Debug)]
-pub struct OrderProduct {
-    pub order_product_id: i32,
-    pub product_id: i32,
-    pub name: String,
-    pub quantity: i32,
-    pub price: f64,
-    pub description: String,
-    pub image_url: String,
-    pub product_category: ProductCategory,
-    // pub updated_at: chrono::NaiveDateTime,
-    // pub created_at: chrono::NaiveDateTime
 }

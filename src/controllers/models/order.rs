@@ -1,6 +1,5 @@
 use serde::Deserialize;
-
-use crate::domain::entities::{client::Client, order::{Order, OrderProduct}, product_category::ProductCategory};
+use crate::domain::entities::{client::Client, order::Order, order_product::OrderProduct, product_category::ProductCategory};
 
 #[derive(Deserialize, Debug)]
 pub struct GetOrdersQuery {
@@ -43,6 +42,7 @@ impl From<CreateOrderDTO> for Order {
             },
             order_products: client_dto.products.into_iter().map(|product| OrderProduct {
                 order_product_id: 0,
+                order_id: 0,
                 name: "".to_string(),
                 description: "".to_string(),
                 image_url: "".to_string(),

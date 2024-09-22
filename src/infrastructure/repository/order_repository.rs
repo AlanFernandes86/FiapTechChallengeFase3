@@ -2,9 +2,9 @@ use std::error::Error;
 use std::sync::Arc;
 use async_trait::async_trait;
 use sqlx::mssql::MssqlPool;
-use crate::domain::entities::order::{Order, OrderProduct};
+use crate::domain::entities::order::Order;
 use crate::domain::repositories::order_repository::OrderRepository;
-use crate::infrastructure::repository::entity::db_order::{DbOrder, DbOrderProduct};
+use crate::infrastructure::repository::entity::db_order::DbOrder;
 
 pub struct MssqlOrderRepository {
     pool: Arc<MssqlPool>,
@@ -13,47 +13,6 @@ pub struct MssqlOrderRepository {
 impl MssqlOrderRepository {
     pub fn new(pool: Arc<MssqlPool>) -> Self {
         MssqlOrderRepository { pool }
-    }
-
-    pub async fn get_order_products(&self, order_id: i32) -> Result<Vec<OrderProduct>, Box<dyn Error>> {
-        let result = sqlx::query_as::<_, DbOrderProduct>(
-            r#"
-            SELECT
-                op.id AS order_product_id,
-                p.id AS product_id,
-                p.name,
-                op.quantity,
-                op.price,
-                p.description,
-                p.image_url,
-                pc.id AS product_category_id,
-                pc.name AS product_category_name,
-                pc.description AS product_category_description,
-                op.updated_at,
-                op.created_at
-            FROM
-                TechChallenge.dbo.order_product op
-                JOIN TechChallenge.dbo.product p ON op.product_id = p.id
-                JOIN TechChallenge.dbo.product_category pc ON p.product_category_id = pc.id
-            WHERE
-                op.order_id = @p1
-            "#
-        )
-        .bind(order_id)
-        .fetch_all(&*self.pool)
-        .await;
-
-        match result {
-            Ok(vec) => {
-                if vec.is_empty() {
-                    Ok(vec![])
-                } else {
-                    let order_products: Vec<OrderProduct> = vec.into_iter().map(Into::into).collect();
-                    Ok(order_products)
-                }
-            },
-            Err(e) => Err(Box::new(e))
-        }
     }
 }
 
@@ -83,16 +42,14 @@ impl OrderRepository for MssqlOrderRepository {
         .await;
 
         match result_order {
-            Ok(Some(db_order)) => {
-                let order_products = self.get_order_products(order_id).await?;
-                let mut domain_order: Order = db_order.into();
-                domain_order.order_products = order_products;
-                domain_order.total = domain_order.order_products.iter().map(|op| op.price * op.quantity as f64).sum();       
-                Ok(Some(domain_order))
+            Ok(option) => {
+                match option {
+                    Some(db_order) => Ok(Some(db_order.into())),
+                    None => Ok(None)
+                }
             },
-            Ok(None) => Ok(None),
             Err(e) => Err(Box::new(e))
-        }
+        }        
     }
 
     async fn get_orders_by_status(&self, order_status_list: Vec<i32>) -> Result<Option<Vec<Order>>, Box<dyn Error>> {
@@ -137,17 +94,10 @@ impl OrderRepository for MssqlOrderRepository {
             .await;
 
         match result_order {
-            Ok(vec) => {
-                if vec.is_empty() {
-                    Ok(None)
-                } else {
-                    let mut domain_orders: Vec<Order> = vec.into_iter().map(Into::into).collect();
-                    for domain_order in &mut domain_orders {
-                        let order_products = self.get_order_products(domain_order.id).await?;
-                        domain_order.order_products = order_products;
-                        domain_order.total = domain_order.order_products.iter().map(|op| op.price * op.quantity as f64).sum();
-                    }
-                    Ok(Some(domain_orders))
+            Ok(option) => {
+                match option {
+                    vec if vec.is_empty() => Ok(None),
+                    vec => Ok(Some(vec.into_iter().map(Into::into).collect()))
                 }
             },
             Err(e) => Err(Box::new(e))

@@ -14,6 +14,7 @@ use crate::{
     domain::errors::invalid_order_status_update_error::InvalidOrderStatusUpdateError,
     infrastructure::repository::{
         common::mssql_pool::SqlServerPool,
+        order_product_repository::MssqlOrderProductRepository,
         order_repository::MssqlOrderRepository
     }};
 
@@ -23,8 +24,9 @@ pub async fn get_order_by_id(path: web::Path<i32>) -> impl Responder {
     let arc_pool = SqlServerPool::get_instance().await;    
     match arc_pool {
         Ok(pool) => {
-            let repo = MssqlOrderRepository::new(pool.clone());
-            let use_case = GetOrderByIdUseCase::new(Box::new(repo));
+            let order_repo = MssqlOrderRepository::new(pool.clone());
+            let order_product_repo = MssqlOrderProductRepository::new(pool.clone());
+            let use_case = GetOrderByIdUseCase::new(Box::new(order_repo), Box::new(order_product_repo));
             let result = use_case.handle(order_id).await;
             match result {
                 Ok(option) => {
@@ -46,8 +48,9 @@ pub async fn get_orders(get_orders_query: web::Query<GetOrdersQuery>) -> impl Re
     let arc_pool = SqlServerPool::get_instance().await;    
     match arc_pool {
         Ok(pool) => {
-            let repo = MssqlOrderRepository::new(pool.clone());
-            let use_case = GetOrdersByStatusUseCase::new(Box::new(repo));
+            let order_repo = MssqlOrderRepository::new(pool.clone());
+            let order_product_repo = MssqlOrderProductRepository::new(pool.clone());
+            let use_case = GetOrdersByStatusUseCase::new(Box::new(order_repo), Box::new(order_product_repo));
             let result = use_case.handle(order_status_id).await;
             match result {
                 Ok(option) => {
