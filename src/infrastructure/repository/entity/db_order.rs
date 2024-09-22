@@ -1,4 +1,4 @@
-use crate::domain::entities::{client::Client, order::{Order, OrderStatus}, order_product::OrderProduct, product_category::ProductCategory};
+use crate::domain::entities::{client::Client, order::{Order, OrderStatus}};
 
 #[derive(sqlx::FromRow)]
 pub struct DbOrder {
