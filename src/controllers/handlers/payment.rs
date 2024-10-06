@@ -37,7 +37,7 @@ pub async fn start_payment(start_payment: web::Json<StartPaymentDTO>) -> impl Re
             match result {
                 Ok(option) => 
                     match option {
-                        Some(_) => HttpResponse::Created().finish(),
+                        Some(start_payment_response) => HttpResponse::Created().json(start_payment_response),
                         None => HttpResponse::BadRequest().body(
                             format!(
                             "No order_id found with the given id [{0}].",

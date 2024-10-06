@@ -2,10 +2,8 @@ use std::error::Error;
 use crate::{
         application::order::get_order_by_id::GetOrderByIdUseCase, 
         controllers::models::payment::StartPaymentDTO, domain::{
-            entities::{order::Order, payment::Payment},
-            enums::payment_status::PaymentStatus,
             repository::payment_repository::PaymentRepository,
-            service::payment_service::PaymentService
+            service::{models::start_payment_response::StartPaymentResponse, payment_service::PaymentService}
         }
     };
 
@@ -28,29 +26,15 @@ impl StartPaymentUseCase {
         }
     }
 
-    pub async fn handle(&self, start_payment_dto: StartPaymentDTO) -> Result<Option<()>, Box<dyn Error>> {
+    pub async fn handle(&self, start_payment_dto: StartPaymentDTO) -> Result<Option<StartPaymentResponse>, Box<dyn Error>> {
         let result_get_order = self.get_order_by_id_use_case.handle(start_payment_dto.order_id).await;
         match  result_get_order {
             Ok(Some(order)) => {
-                self.payment_service.start_payment_by_qrcode(&order).await?;
-                self.create_payment_in_database(start_payment_dto, &order).await?;
-                Ok(Some(()))
+                let start_payment_result = self.payment_service.start_payment(&order, start_payment_dto.pdv_id.clone()).await?;
+                Ok(Some(start_payment_result))
             },
             Ok(None) => Ok(None),            
             Err(e) => return Err(e)
         }
-    }
-
-async fn create_payment_in_database(&self, payment_dto: StartPaymentDTO, order: &Order) -> Result<(), Box<dyn Error>> {
-        let payment = Payment {
-            id: None,
-            order_id: payment_dto.order_id,
-            payment_status_id: PaymentStatus::Pending as i32,
-            payment_method_id: payment_dto.payment_method_id,
-            value: order.total,
-            message: "Pagamento da ordem id: ".to_string() + &payment_dto.order_id.to_string() + " iniciado com sucesso.",
-        };
-        self.payment_repository.put_payment(payment).await?;
-        Ok(())
     }
 }

@@ -4,3 +4,8 @@ pub struct StartPaymentDTO {
     pub pdv_id: String,
     pub payment_method_id: i32
 }
+
+pub struct MercadoPagoNotificationDTO {
+    pub topic: String,
+    pub resource: String
+}
