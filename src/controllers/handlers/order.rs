@@ -1,3 +1,4 @@
+use std::sync::Arc;
 use actix_web::{web, get, post, patch, HttpResponse, Responder};
 use crate::{
     application::order::{
@@ -12,11 +13,11 @@ use crate::{
         UpdateOrderStatusDTO 
     }, 
     domain::errors::invalid_order_status_update_error::InvalidOrderStatusUpdateError,
-    infrastructure::repository::{
+    infrastructure::{messaging::kafka::kafka_producer::KafkaProducer, repository::{
         common::mssql_pool::SqlServerPool,
         order_product_repository::MssqlOrderProductRepository,
         order_repository::MssqlOrderRepository
-    }};
+    }}};
 
 #[get("/{orderId}")]
 pub async fn get_order_by_id(path: web::Path<i32>) -> impl Responder {
@@ -92,7 +93,8 @@ pub async fn update_order_status(update_status_dto: web::Json<UpdateOrderStatusD
     match arc_pool {
         Ok(pool) => {
             let repo = MssqlOrderRepository::new(pool.clone());
-            let use_case = UpdateOrderStatusUseCase::new(Box::new(repo));
+            let message_publisher = KafkaProducer::new().expect("Failed to create Kafka producer");
+            let use_case = UpdateOrderStatusUseCase::new(Arc::new(repo), Arc::new(message_publisher));
             let result = use_case.handle(update_status_dto.order_id, update_status_dto.order_status_id).await;
             match result {
                 Ok(updated_order) => 

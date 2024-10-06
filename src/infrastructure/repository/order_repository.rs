@@ -3,7 +3,7 @@ use std::sync::Arc;
 use async_trait::async_trait;
 use sqlx::mssql::MssqlPool;
 use crate::domain::entities::order::Order;
-use crate::domain::repositories::order_repository::OrderRepository;
+use crate::domain::repository::order_repository::OrderRepository;
 use crate::infrastructure::repository::entity::db_order::DbOrder;
 
 pub struct MssqlOrderRepository {
@@ -18,7 +18,7 @@ impl MssqlOrderRepository {
 
 #[async_trait]
 impl OrderRepository for MssqlOrderRepository {
-    async fn get_order_by_id(&self, order_id: i32) -> Result<Option<Order>, Box<dyn Error>> {
+    async fn get_order_by_id(&self, order_id: i32) -> Result<Option<Order>, Box<dyn Error + Send + Sync>> {
         let result_order = sqlx::query_as::<_, DbOrder>(
             r#"
             SELECT
@@ -159,7 +159,7 @@ impl OrderRepository for MssqlOrderRepository {
         }
     }
 
-    async fn update_order_status(&self, order_id: i32, order_status_id: i32) -> Result<(), Box<dyn Error>> {
+    async fn update_order_status(&self, order_id: i32, order_status_id: i32) -> Result<(), Box<dyn Error + Send + Sync>> {
         let result = sqlx::query(
             r#"
             UPDATE TechChallenge.dbo.[order]

@@ -1,5 +1,5 @@
 use std::error::Error;
-use crate::domain::{ entities::client::Client, repositories::client_repository::ClientRepository };
+use crate::domain::{ entities::client::Client, repository::client_repository::ClientRepository };
 
 pub struct SetClientUseCase {
     client_repository: Box<dyn ClientRepository>,

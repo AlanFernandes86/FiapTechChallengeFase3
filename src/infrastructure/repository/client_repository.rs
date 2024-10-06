@@ -3,7 +3,7 @@ use std::sync::Arc;
 use async_trait::async_trait;
 use sqlx::mssql::MssqlPool;
 use crate::domain::entities::client::Client;
-use crate::domain::repositories::client_repository::ClientRepository;
+use crate::domain::repository::client_repository::ClientRepository;
 use crate::infrastructure::repository::entity::db_client::DbClient;
 
 pub struct MssqlClientRepository {

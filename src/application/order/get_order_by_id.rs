@@ -1,5 +1,5 @@
 use std::error::Error;
-use crate::domain::{entities::order::Order, repositories::{order_product_repository::OrderProductRepository, order_repository::OrderRepository}};
+use crate::domain::{entities::order::Order, repository::{order_product_repository::OrderProductRepository, order_repository::OrderRepository}};
 
 pub struct GetOrderByIdUseCase {
     order_repository: Box<dyn OrderRepository>,

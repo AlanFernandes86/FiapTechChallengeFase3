@@ -1,4 +1,4 @@
-use actix_web::{App,  HttpServer};
+use actix_web::{web, App, HttpResponse, HttpServer};
 
 mod controllers;
 mod application;
@@ -15,6 +15,7 @@ async fn main() -> std::io::Result<()> {
             .configure(controllers::routes::order::init)
             .configure(controllers::routes::order_product::init)
             .configure(controllers::routes::payment::init)
+            .route("/", web::get().to(|| async { HttpResponse::Ok().body("Hello FiapTechChallenge Fase 2!") }))
     })
     .bind(("127.0.0.1", 8080))?
     .bind(("127.0.0.1", 443))?

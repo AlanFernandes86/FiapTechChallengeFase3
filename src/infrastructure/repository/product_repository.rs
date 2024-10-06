@@ -3,7 +3,7 @@ use std::sync::Arc;
 use async_trait::async_trait;
 use sqlx::mssql::MssqlPool;
 use crate::domain::entities::product::Product;
-use crate::domain::repositories::product_repository::ProductRepository;
+use crate::domain::repository::product_repository::ProductRepository;
 use crate::infrastructure::repository::entity::db_product::DbProduct;
 
 pub struct MssqlProductRepository {

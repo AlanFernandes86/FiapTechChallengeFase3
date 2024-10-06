@@ -1,5 +1,5 @@
 use std::error::Error;
-use crate::domain::repositories::order_product_repository::OrderProductRepository;
+use crate::domain::repository::order_product_repository::OrderProductRepository;
 
 pub struct DeleteOrderProductUseCase {
     order_product_repository: Box<dyn OrderProductRepository>

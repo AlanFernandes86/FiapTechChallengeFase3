@@ -1,5 +1,5 @@
 use std::error::Error;
-use crate::domain::{entities::product::Product, repositories::product_repository::ProductRepository};
+use crate::domain::{entities::product::Product, repository::product_repository::ProductRepository};
 
 pub struct GetProductsByCategoryUseCase {
     product_repository: Box<dyn ProductRepository>,

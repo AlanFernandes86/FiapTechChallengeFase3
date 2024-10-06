@@ -1,6 +1,6 @@
 #[derive(serde::Deserialize, Debug)]
-pub struct SetPaymentDTO {
+pub struct StartPaymentDTO {
     pub order_id: i32,
-    pub value: i32,
-    pub method: f32
+    pub pdv_id: String,
+    pub payment_method_id: i32
 }

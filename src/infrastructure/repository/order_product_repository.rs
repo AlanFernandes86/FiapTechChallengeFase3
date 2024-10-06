@@ -2,7 +2,7 @@ use std::sync::Arc;
 use std::error::Error;
 use async_trait::async_trait;
 use sqlx::MssqlPool;
-use crate::domain::{entities::order_product::OrderProduct, repositories::order_product_repository::OrderProductRepository};
+use crate::domain::{entities::order_product::OrderProduct, repository::order_product_repository::OrderProductRepository};
 
 use super::entity::db_order_product::DbOrderProduct;
 

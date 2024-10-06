@@ -1,6 +1,6 @@
 use std::error::Error;
 use crate::domain::entities::client::Client;
-use crate::domain::repositories::client_repository::ClientRepository;
+use crate::domain::repository::client_repository::ClientRepository;
 
 pub struct GetClientByCpfUseCase {
     client_repository: Box<dyn ClientRepository>,

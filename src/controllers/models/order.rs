@@ -41,7 +41,7 @@ impl From<CreateOrderDTO> for Order {
                 email: "".to_string(),
             },
             order_products: client_dto.products.into_iter().map(|product| OrderProduct {
-                order_product_id: 0,
+                order_product_id: Some(0),
                 order_id: 0,
                 name: "".to_string(),
                 description: "".to_string(),

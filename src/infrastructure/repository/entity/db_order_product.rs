@@ -20,7 +20,7 @@ pub struct DbOrderProduct {
 impl From<DbOrderProduct> for OrderProduct {
     fn from(db_order_product: DbOrderProduct) -> Self {
         OrderProduct {
-            order_product_id: db_order_product.order_product_id,
+            order_product_id: Some(db_order_product.order_product_id),
             order_id: db_order_product.order_id,
             product_id: db_order_product.product_id,
             name: db_order_product.name,

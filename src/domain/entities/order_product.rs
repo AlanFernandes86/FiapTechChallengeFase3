@@ -2,7 +2,7 @@ use super::product_category::ProductCategory;
 
 #[derive(serde::Serialize, Debug)]
 pub struct OrderProduct {
-    pub order_product_id: i32,
+    pub order_product_id: Option<i32>,
     pub order_id: i32,
     pub product_id: i32,
     pub name: String,

@@ -1,6 +1,6 @@
 use std::error::Error;
 
-use crate::domain::repositories::product_category_repository::ProductCategoryRepository;
+use crate::domain::repository::product_category_repository::ProductCategoryRepository;
 
 pub struct DeleteProductCategoryUseCase {
     product_category_repository: Box<dyn ProductCategoryRepository>,
