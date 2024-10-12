@@ -29,25 +29,16 @@ spec:
                   name: tech-challenge-secrets
                   key: KAFKA_BOOTSTRAP_SERVERS
             - name: KAFKA_ORDER_STATUS_UPDATE_TOPIC
-              valueFrom:
-                secretKeyRef:
-                  name: tech-challenge-secrets
-                  key: KAFKA_ORDER_STATUS_UPDATE_TOPIC
+              value: "order-status-update"
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
                   name: tech-challenge-secrets
                   key: DATABASE_URL
             - name: MERCADO_PAGO_URL
-              valueFrom:
-                secretKeyRef:
-                  name: tech-challenge-secrets
-                  key: MERCADO_PAGO_URL
+              value: "https://api.mercadopago.com"
             - name: MERCADO_PAGO_NOTIFICATION_URL
-              valueFrom:
-                secretKeyRef:
-                  name: tech-challenge-secrets
-                  key: MERCADO_PAGO_NOTIFICATION_URL
+              value: "https://mighty-flounder-secondly.ngrok-free.app/api/v1/payment/mercado_pago_notification"
             - name: MERCADO_PAGO_CLIENT_ID
               valueFrom:
                 secretKeyRef:

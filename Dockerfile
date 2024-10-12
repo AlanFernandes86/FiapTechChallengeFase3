@@ -16,19 +16,11 @@ RUN USER=root cargo new --bin fiap_tech_challenge_fase2
 WORKDIR /fiap_tech_challenge_fase2
 
 # Copia os arquivos de configuração do projeto
-COPY ./Cargo.lock ./Cargo.lock
+# COPY ./Cargo.lock ./Cargo.lock
 COPY ./Cargo.toml ./Cargo.toml
-
-# Compila o projeto (apenas para cache das dependências)
-RUN cargo build --release
-
-# Remove o arquivo principal gerado anteriormente
-RUN rm src/*.rs
-
-# Copia o código fonte da aplicação
 COPY ./src ./src
 
-# Compila o projeto em modo release
+# Compila o projeto
 RUN cargo build --release
 
 # Etapa 2: Imagem final com GLIBC recente
@@ -37,6 +29,11 @@ FROM ubuntu:22.04
 # Instala as dependências de tempo de execução necessárias
 RUN apt-get update && apt-get install -y \
     libc6 \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && apt-get install -y \
+    libc6 \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 # Define o diretório de trabalho na imagem final

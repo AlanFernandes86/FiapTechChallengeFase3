@@ -52,14 +52,18 @@ impl MercadoPagoService {
             .json(&request_payload)
             .send()
             .await?;        
-        
-        match response.status() {
+
+        let status = response.status();
+        let response_body: serde_json::Value = response.json().await?;
+        match status {
             reqwest::StatusCode::OK => {
-                let response_body: serde_json::Value = response.json().await?;
                 let token = response_body["access_token"].as_str().unwrap();
                 Ok(token.to_string())
             },
-            _ => Err(Box::new(response.error_for_status().unwrap_err()))
+            _ => {
+                println!("{:?}", response_body);
+                Err(response_body["error"].as_str().unwrap().into())
+            }
         }
     }
 
