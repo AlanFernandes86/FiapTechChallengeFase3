@@ -3,7 +3,7 @@ use crate::domain::{errors::invalid_order_status_update_error::InvalidOrderStatu
 
 pub struct UpdateOrderStatusUseCase {
     order_repository: Arc<dyn OrderRepository>,
-    message_publisher: Arc<dyn EventPublisher>,
+    message_publisher: Arc<dyn EventPublisher>
 }
 
 impl UpdateOrderStatusUseCase {
@@ -26,7 +26,7 @@ impl UpdateOrderStatusUseCase {
                 tokio::spawn(async move {
                     if let Ok(Some(updated_order)) = repository.get_order_by_id(order_id).await {
                         if let Err(e) = message_publisher
-                            .publish_order_status_update("order-status-update", &updated_order)
+                            .publish_order_status_update(&updated_order)
                             .await
                         {
                             eprintln!("Erro ao publicar evento de atualização da ordem: {}", e);

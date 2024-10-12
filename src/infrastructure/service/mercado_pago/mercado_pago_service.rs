@@ -1,25 +1,49 @@
-use std::error::Error;
+use std::{env, error::Error};
 use async_trait::async_trait;
-use crate::domain::{entities::order::Order, service::{models::start_payment_response::StartPaymentResponse, payment_service::PaymentService}};
+use crate::domain::{
+    entities::order::Order, 
+    service::{models::start_payment_response::StartPaymentResponse, payment_service::PaymentService}
+};
 
 use super::{create_order_request::{CreateMpOrderRequest, CreateMpOrderRequestItem}, get_pos_list_response::GetPosListResponse, get_token_request::GetTokenRequest};
 
 pub struct MercadoPagoService {
     http_client: reqwest::Client,
+    base_url: String,
+    notification_url: String,
+    client_id: String,
+    client_secret: String,
+    user_id: String,
+    external_store_id: String
 }
 
 impl MercadoPagoService {
+
     // O método new é definido diretamente na struct
     pub fn new(http_client: reqwest::Client) -> Self {
-        MercadoPagoService { http_client }
+        let base_url = env::var("MERCADO_PAGO_URL").expect("MERCADO_PAGO_URL not found in .env file");
+        let notification_url = env::var("MERCADO_PAGO_NOTIFICATION_URL").expect("MERCADO_PAGO_NOTIFICATION_URL not found in .env file");
+        let client_id = env::var("MERCADO_PAGO_CLIENT_ID").expect("MERCADO_PAGO_CLIENT_ID not found in .env file");
+        let client_secret = env::var("MERCADO_PAGO_CLIENT_SECRET").expect("MERCADO_PAGO_CLIENT_SECRET not found in .env file");
+        let user_id = env::var("MERCADO_PAGO_USER_ID").expect("MERCADO_PAGO_USER_ID not found in .env file");
+        let external_store_id = env::var("MERCADO_PAGO_EXTERNAL_STORE_ID").expect("MERCADO_PAGO_EXTERNAL_STORE_ID not found in .env file");
+        MercadoPagoService { 
+            http_client,
+            base_url,
+            notification_url,
+            client_id,
+            client_secret,
+            user_id,
+            external_store_id
+        }
     }
 
     pub async fn get_access_token(&self) -> Result<String, Box<dyn Error>> {
-        let request_uri = "https://api.mercadopago.com/oauth/token";
+        let request_uri = self.base_url.clone() + "/oauth/token";
         let request_payload = GetTokenRequest {
             grant_type: "client_credentials".to_string(),
-            client_id: "3967168780421308".to_string(),
-            client_secret: "sLraEfAHw9RbJZ1IBOBY39m8zTAxDUWt".to_string(),
+            client_id: self.client_id.clone(),
+            client_secret: self.client_secret.clone(),
             test_token: true
         };
 
@@ -44,7 +68,7 @@ impl MercadoPagoService {
             external_reference: pos_external_id.to_string() + "#" + order.id.to_string().as_str(),
             title: "ChallengeFastFood".to_string(),
             description: "Pedido do ChallengeFastFood".to_string(),
-            notification_url: "https://mighty-flounder-secondly.ngrok-free.app/api/v1/payment/mercado_pago_notification".to_string(),
+            notification_url: self.notification_url.clone(),
             total_amount: order.total,
             items: vec![
                 CreateMpOrderRequestItem {
@@ -58,7 +82,7 @@ impl MercadoPagoService {
             ],
         };
 
-        let request_uri = "https://api.mercadopago.com/instore/qr/seller/collectors/2000834477/stores/FIAP001".to_string() + "/pos/" + pos_external_id + "/orders";
+        let request_uri = self.base_url.clone() + "/instore/qr/seller/collectors/" + &self.user_id.clone() + "/stores/" + &self.external_store_id + "/pos/" + pos_external_id + "/orders";
         let response = self.http_client.put(request_uri)
             .header("Authorization", "Bearer ".to_string() + &mp_token)
             .json(&request_payload)
@@ -72,7 +96,7 @@ impl MercadoPagoService {
     }
 
     pub async fn get_pos_list(&self, mp_token: &str) -> Result<GetPosListResponse, Box<dyn Error>> {
-        let request_uri = "https://api.mercadopago.com/pos";
+        let request_uri = self.base_url.clone() + "/pos";
         let response = self.http_client.get(request_uri)
             .header("Authorization", "Bearer ".to_string() + &mp_token)
             .send()

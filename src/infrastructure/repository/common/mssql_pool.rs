@@ -1,6 +1,6 @@
-use sqlx::{Mssql, Pool};
+use sqlx::{database, Mssql, Pool};
 use once_cell::sync::OnceCell;
-use std::sync::Arc;
+use std::{env, sync::Arc};
 
 pub struct SqlServerPool {
     pool: Arc<Pool<Mssql>>,
@@ -12,7 +12,8 @@ static INSTANCE: OnceCell<SqlServerPool> = OnceCell::new();
 impl SqlServerPool {
     pub async fn get_instance() -> Result<Arc<Pool<Mssql>>, sqlx::Error> {
          if INSTANCE.get().is_none() {
-            let pool = Pool::<Mssql>::connect("mssql://sa:SqlServer2019!@localhost:1433/master").await;
+            let database_url = env::var("DATABASE_URL").expect("DATABASE_URL not found in .env file");
+            let pool = Pool::<Mssql>::connect(&database_url).await;
             match pool {
                 Ok(_) => {
                     let sql_server_pool = SqlServerPool {

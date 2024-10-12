@@ -1,28 +1,31 @@
 use rdkafka::{producer::{FutureProducer, FutureRecord}, ClientConfig};
 use async_trait::async_trait;
-use crate::domain::{entities::order::Order, messaging::event_publisher::EventPublisher};
+use crate::{application::order, domain::{entities::order::Order, messaging::event_publisher::EventPublisher}};
 
 pub struct KafkaProducer {
     producer: FutureProducer,
+    order_status_update_topic: String
 }
 
 impl KafkaProducer {
     pub fn new() -> Result<Self, Box<dyn std::error::Error>> {
+        let bootstraps = std::env::var("KAFKA_BOOTSTRAP_SERVERS").expect("KAFKA_BOOTSTRAP_SERVERS not found in .env file");
+        let order_status_update_topic = std::env::var("KAFKA_ORDER_STATUS_UPDATE_TOPIC").expect("KAFKA_ORDER_STATUS_UPDATE_TOPIC not found in .env file");
         let producer: FutureProducer = ClientConfig::new()
-            .set("bootstrap.servers", "localhost:9092")
+            .set("bootstrap.servers", bootstraps)
             .set("message.timeout.ms", "5000")
             .create()?;
 
-        Ok(Self { producer })
+        Ok(Self { producer, order_status_update_topic })
     }
 }
 
 #[async_trait]
 impl EventPublisher for KafkaProducer {
-    async fn publish_order_status_update(&self, topic: &str, payload: &Order) -> Result<(), Box<dyn std::error::Error>> {
+    async fn publish_order_status_update(&self, payload: &Order) -> Result<(), Box<dyn std::error::Error>> {
         let json_payload = serde_json::to_string(payload).unwrap();
         let key = payload.id.to_string();
-        let record = FutureRecord::to(topic)
+        let record = FutureRecord::to(&self.order_status_update_topic)
             .payload(&json_payload)
             .key(&key);
 

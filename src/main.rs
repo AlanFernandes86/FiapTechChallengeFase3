@@ -5,8 +5,15 @@ mod application;
 mod infrastructure;
 mod domain;
 
+use dotenv::dotenv;
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    println!("Starting FiapTechChallenge Fase 2!"); 
+
+    // Carrega as variáveis de ambiente
+    dotenv().ok();
+
     HttpServer::new(|| {
         App::new()
             .configure(controllers::routes::client::init)
@@ -17,8 +24,8 @@ async fn main() -> std::io::Result<()> {
             .configure(controllers::routes::payment::init)
             .route("/", web::get().to(|| async { HttpResponse::Ok().body("Hello FiapTechChallenge Fase 2!") }))
     })
-    .bind(("127.0.0.1", 8080))?
-    .bind(("127.0.0.1", 443))?
+    .bind(("0.0.0.0", 8080))?
+    .bind(("0.0.0.0", 443))?
     .run()
     .await
 }

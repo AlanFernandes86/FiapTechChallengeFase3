@@ -3,5 +3,5 @@ use async_trait::async_trait;
 
 #[async_trait]
 pub trait EventPublisher: Send + Sync {
-    async fn publish_order_status_update(&self, event: &str, payload: &Order) -> Result<(), Box<dyn std::error::Error>>;
+    async fn publish_order_status_update(&self, payload: &Order) -> Result<(), Box<dyn std::error::Error>>;
 }

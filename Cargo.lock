@@ -3,24 +3,6 @@
 version = 3
 
 [[package]]
-name = "FiapTechChallengeFase1"
-version = "0.1.0"
-dependencies = [
- "actix-web",
- "async-trait",
- "chrono",
- "futures",
- "once_cell",
- "rdkafka",
- "reqwest",
- "serde",
- "serde_json",
- "sqlx",
- "syn 1.0.109",
- "tokio",
-]
-
-[[package]]
 name = "actix-codec"
 version = "0.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -603,6 +585,25 @@ name = "fastrand"
 version = "2.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e8c02a5121d4ea3eb16a80748c74f5549a5665e4c21333c6098f283870fbdea6"
+
+[[package]]
+name = "fiap_tech_challenge_fase2"
+version = "0.1.0"
+dependencies = [
+ "actix-web",
+ "async-trait",
+ "chrono",
+ "dotenv",
+ "futures",
+ "once_cell",
+ "rdkafka",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "syn 1.0.109",
+ "tokio",
+]
 
 [[package]]
 name = "flate2"
