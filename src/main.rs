@@ -1,18 +1,19 @@
+use std::env;
+use dotenv::dotenv;
 use actix_web::{web, App, HttpResponse, HttpServer};
-
 mod controllers;
 mod application;
 mod infrastructure;
 mod domain;
 
-use dotenv::dotenv;
-
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     println!("Starting FiapTechChallenge Fase 2!"); 
 
-    // Carrega as variáveis de ambiente
-    dotenv().ok();
+    let is_local = env::var("ENVIRONMENT").unwrap_or_else(|_| "local".to_string()) == "local";
+    if is_local {
+        dotenv().ok();
+    }
 
     HttpServer::new(|| {
         App::new()

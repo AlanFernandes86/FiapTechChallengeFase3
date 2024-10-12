@@ -1,6 +1,6 @@
 use rdkafka::{producer::{FutureProducer, FutureRecord}, ClientConfig};
 use async_trait::async_trait;
-use crate::{application::order, domain::{entities::order::Order, messaging::event_publisher::EventPublisher}};
+use crate::domain::{entities::order::Order, messaging::event_publisher::EventPublisher};
 
 pub struct KafkaProducer {
     producer: FutureProducer,

@@ -1,4 +1,4 @@
-use sqlx::{database, Mssql, Pool};
+use sqlx::{Mssql, Pool};
 use once_cell::sync::OnceCell;
 use std::{env, sync::Arc};
 

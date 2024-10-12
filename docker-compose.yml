@@ -1,4 +1,4 @@
-# docker-compose -f .\docker-compose-kafka.yml -p tech-challenge-kafka  up -d
+# docker-compose -f .\docker-compose.yml -p fiap-tech-challenge-2  up -d
 ---
 version: '2'
 services:
@@ -75,6 +75,24 @@ services:
       "
     networks:
       - kafka-net
+  
+  mssql:
+    image: "mcr.microsoft.com/mssql/server:2022-latest"
+    container_name: "sqlserver"
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=SqlServer2019!
+      - MSSQL_PID=Developer
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql_data:/var/opt/mssql
+    networks:
+      - kafka-net
+    restart: always
+
+volumes:
+  mssql_data:
 
 networks:
   kafka-net:
