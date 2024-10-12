@@ -16,17 +16,17 @@ pub struct MerchantOrderResponse {
     pub notification_url: String,
     pub date_created: String,
     pub last_updated: String,
-    pub sponsor_id: String,
+    pub sponsor_id: Value,
     pub shipping_cost: i64,
     pub total_amount: f64,
     pub site_id: String,
     pub paid_amount: f64,
     pub refunded_amount: i64,
-    pub payer: Payer,
+    pub payer: Value,
     pub items: Vec<Item>,
     pub cancelled: bool,
     pub additional_info: String,
-    pub application_id: String,
+    pub application_id: Value,
     pub is_test: bool,
     pub order_status: String,
     pub client_id: String,
@@ -56,18 +56,12 @@ pub struct Collector {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct Payer {
-    pub id: i64,
-    pub email: String,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Item {
     pub id: String,
     pub category_id: String,
     pub currency_id: String,
     pub description: String,
-    pub picture_url: String,
+    pub picture_url: Value,
     pub title: String,
     pub quantity: i64,
     pub unit_price: f64,

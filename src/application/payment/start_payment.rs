@@ -1,26 +1,20 @@
 use std::error::Error;
 use crate::{
         application::order::get_order_by_id::GetOrderByIdUseCase, 
-        controllers::models::payment::StartPaymentDTO, domain::{
-            repository::payment_repository::PaymentRepository,
-            service::{models::start_payment_response::StartPaymentResponse, payment_service::PaymentService}
-        }
+        controllers::models::payment::StartPaymentDTO, domain::service::{models::start_payment_response::StartPaymentResponse, payment_service::PaymentService}
     };
 
 pub struct StartPaymentUseCase {
-    payment_repository: Box<dyn PaymentRepository>,
     get_order_by_id_use_case: Box<GetOrderByIdUseCase>,
     payment_service: Box<dyn PaymentService>
 }
 
 impl StartPaymentUseCase {
     pub fn new(
-        payment_repository: Box<dyn PaymentRepository>,
         get_order_by_id_use_case: Box<GetOrderByIdUseCase>,
         payment_service: Box<dyn PaymentService>
     ) -> Self {
         Self {
-            payment_repository,
             get_order_by_id_use_case,
             payment_service,
         }

@@ -20,8 +20,8 @@ impl PaymentRepository for MssqlPaymentRepository {
         let result = sqlx::query(
             "MERGE INTO TechChallenge.dbo.payment AS target
             USING (VALUES (@p1, @p2, @p3, @p4, @p5, @p6, @p7, GETDATE(), GETDATE())) AS source 
-            (id, order_id, payment_status_id, payment_method_id, value, message, origin, updated_at, created_at)
-            ON target.id = source.id
+            (order_id, payment_status_id, payment_method_id, payment_method_order_id, value, message, origin, updated_at, created_at)
+            ON target.payment_method_id = source.payment_method_id AND target.payment_method_order_id = source.payment_method_order_id
             WHEN MATCHED THEN
                 UPDATE SET
                     target.payment_status_id = source.payment_status_id,
@@ -30,13 +30,13 @@ impl PaymentRepository for MssqlPaymentRepository {
                     target.message = source.message,
                     target.updated_at = source.updated_at
             WHEN NOT MATCHED THEN
-                INSERT (order_id, payment_status_id, payment_method_id, value, message, origin, updated_at, created_at)
-                VALUES (source.order_id, source.payment_status_id, source.payment_method_id, source.value, source.message, source.origin, source.updated_at, source.created_at);"
+                INSERT (order_id, payment_status_id, payment_method_id, payment_method_order_id, value, message, origin, updated_at, created_at)
+                VALUES (source.order_id, source.payment_status_id, source.payment_method_id, source.payment_method_order_id, source.value, source.message, source.origin, source.updated_at, source.created_at);"
         )
-        .bind(payment.id)
         .bind(payment.order_id)
         .bind(payment.payment_status_id)
         .bind(payment.payment_method_id)
+        .bind(payment.payment_method_order_id)
         .bind(payment.value)
         .bind(payment.message)
         .bind(payment.origin)

@@ -18,17 +18,17 @@ pub struct MercadoPagoNotificationUseCase {
 impl MercadoPagoNotificationUseCase {
     pub fn new(
         payment_repository: Box<dyn PaymentRepository>,
-        get_order_by_id_use_case: Box<UpdateOrderStatusUseCase>,
+        updated_order_status_use_case: Box<UpdateOrderStatusUseCase>,
         payment_service: Box<MercadoPagoService>
     ) -> Self {
         Self {
             payment_repository,
-            updated_order_status_use_case: get_order_by_id_use_case,
+            updated_order_status_use_case,
             mercado_pago_service: payment_service,
         }
     }
 
-    pub async fn handle(&self, start_payment_dto: MercadoPagoNotificationDTO) -> Result<(), Box<dyn Error>> {
+    pub async fn handle(&self, start_payment_dto: &MercadoPagoNotificationDTO) -> Result<(), Box<dyn Error>> {
         let mp_token = self.mercado_pago_service.get_access_token().await?;
 
         if start_payment_dto.topic != "merchant_order" {
@@ -62,14 +62,15 @@ impl MercadoPagoNotificationUseCase {
     async fn pending_payment_in_database(&self, merchant_order: &MerchantOrderResponse) -> Result<(), Box<dyn Error>> {
       let (origin, order_id) = self.get_origin_and_order_id(&merchant_order.external_reference);
         let payment = Payment {
-            id: merchant_order.id,
+            id: None,
             order_id: order_id,
             payment_status_id: PaymentStatus::Pending as i32,
             payment_method_id: PaymentMethod::MercadoPago as i32,
+            payment_method_order_id: merchant_order.id.to_string(),
             value: merchant_order.total_amount,
             origin: origin,
             message: "Pagamento da ordem id: ".to_string() 
-            + &merchant_order.external_reference.to_string() 
+            + &order_id.to_string() 
             + " iniciado com sucesso. MercadoPago Order ID: " 
             + &merchant_order.id.to_string(),
         };
@@ -80,14 +81,15 @@ impl MercadoPagoNotificationUseCase {
     async fn paid_payment_in_database(&self, merchant_order: &MerchantOrderResponse) -> Result<(), Box<dyn Error>> {
         let (origin, order_id) = self.get_origin_and_order_id(&merchant_order.external_reference);
         let payment = Payment {
-            id: merchant_order.id,
+            id: None,
             order_id: order_id,
             payment_status_id: PaymentStatus::Paid as i32,
             payment_method_id: PaymentMethod::MercadoPago as i32,
+            payment_method_order_id: merchant_order.id.to_string(),
             value: merchant_order.total_amount,
             origin: origin,
             message: "Pagamento da ordem id: ".to_string() 
-            + &merchant_order.external_reference.to_string() 
+            + &order_id.to_string() 
             + " realizado com sucesso. MercadoPago Order ID: " 
             + &merchant_order.id.to_string(),
         };
@@ -98,14 +100,15 @@ impl MercadoPagoNotificationUseCase {
     async fn cancelled_payment_in_database(&self, merchant_order: &MerchantOrderResponse) -> Result<(), Box<dyn Error>> {
       let (origin, order_id) = self.get_origin_and_order_id(&merchant_order.external_reference);
       let payment = Payment {
-          id: merchant_order.id,
+          id: None,
           order_id: order_id,
           payment_status_id: PaymentStatus::Cancelled as i32,
           payment_method_id: PaymentMethod::MercadoPago as i32,
+          payment_method_order_id: merchant_order.id.to_string(),
           value: merchant_order.total_amount,
           origin,
           message: "Pagamento da ordem id: ".to_string() 
-          + &merchant_order.external_reference.to_string() 
+          + &order_id.to_string() 
           + " cancelado! MercadoPago Order ID: " 
           + &merchant_order.id.to_string()
           + ". Motivo: "
