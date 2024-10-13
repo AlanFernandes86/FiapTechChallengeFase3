@@ -1,6 +1,5 @@
 # docker-compose -f .\docker-compose.yml -p fiap-tech-challenge-2  up -d
 ---
-version: '2'
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
@@ -92,6 +91,20 @@ services:
     networks:
       - kafka-net
     restart: always
+
+  k6:
+    image: grafana/k6
+    depends_on:
+      - kafka
+      - mssql
+      - create-topics
+    volumes:
+      - ./test/k6/load_test.js:/load_test.js
+    command: ["run", /load_test.js]
+    # environment:
+      # KAFKA_BOOTSTRAP_SERVERS: "host.docker.internal:9092" # Exemplo de variável de ambiente
+    networks:
+      - kafka-net
 
 volumes:
   mssql_data:

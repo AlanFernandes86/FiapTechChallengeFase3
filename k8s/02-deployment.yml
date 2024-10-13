@@ -20,6 +20,13 @@ spec:
           ports:
             - containerPort: 8080
             - containerPort: 443
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "128Mi"
           env:
             - name: ENVIRONMENT
               value: "prd"
