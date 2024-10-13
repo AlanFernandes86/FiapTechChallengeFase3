@@ -1,3 +1,7 @@
-Usuário Comprador de Teste
+Usuário Comprador de Teste:
 TESTUSER2072438090	
 BK7ME6INKg
+
+
+proxy ngrok:
+ngrok http --domain mighty-flounder-secondly.ngrok-free.app 8080
