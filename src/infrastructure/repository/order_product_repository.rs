@@ -65,7 +65,7 @@ impl OrderProductRepository for MssqlOrderProductRepository {
         }
     }
 
-    async fn get_order_products(&self, order_id: i32) -> Result<Vec<OrderProduct>, Box<dyn Error>> {
+    async fn get_order_products(&self, order_id: i32) -> Result<Vec<OrderProduct>, Box<dyn Error  + Send + Sync>> {
         let result = sqlx::query_as::<_, DbOrderProduct>(
             r#"
             SELECT

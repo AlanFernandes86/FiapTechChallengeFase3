@@ -14,7 +14,7 @@ impl GetOrdersByStatusUseCase {
         }
     }
 
-    pub async fn handle(&self, order_status_id: i32) -> Result<Option<Vec<Order>>, Box<dyn Error>> {
+    pub async fn handle(&self, order_status_id: i32) -> Result<Option<Vec<Order>>, Box<dyn Error + Send + Sync>> {
         let mut status = vec![order_status_id];
 
         if order_status_id == OrderStatus::Active as i32 {

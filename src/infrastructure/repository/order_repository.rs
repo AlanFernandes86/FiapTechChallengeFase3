@@ -52,7 +52,7 @@ impl OrderRepository for MssqlOrderRepository {
         }        
     }
 
-    async fn get_orders_by_status(&self, order_status_list: Vec<i32>) -> Result<Option<Vec<Order>>, Box<dyn Error>> {
+    async fn get_orders_by_status(&self, order_status_list: Vec<i32>) -> Result<Option<Vec<Order>>, Box<dyn Error + Send + Sync>> {
         let placeholders = order_status_list
         .iter()
         .enumerate() // Adiciona o índice ao iterador

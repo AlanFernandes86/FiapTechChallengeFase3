@@ -64,9 +64,10 @@ pub async fn mercado_pago_notification(mercado_pago_notification: web::Json<Merc
         Ok(pool)=> {
             let payment_repo = MssqlPaymentRepository::new(pool.clone());
             let order_repo = MssqlOrderRepository::new(pool.clone());
+            let order_product_repo = MssqlOrderProductRepository::new(pool.clone());
             let message_publisher = KafkaProducer::new().expect("Failed to create Kafka producer");
             let mercado_pago_service = MercadoPagoService::new(reqwest::Client::new());
-            let updated_order_status_use_case = UpdateOrderStatusUseCase::new(Arc::new(order_repo), Arc::new(message_publisher));
+            let updated_order_status_use_case = UpdateOrderStatusUseCase::new(Arc::new(order_repo), Arc::new(order_product_repo), Arc::new(message_publisher));
             let mercado_pago_notification_use_case = MercadoPagoNotificationUseCase::new(Box::new(payment_repo), Box::new(updated_order_status_use_case), Box::new(mercado_pago_service));
  
             let result = mercado_pago_notification_use_case.handle(&mercado_pago_notification_dto).await;

@@ -92,9 +92,10 @@ pub async fn update_order_status(update_status_dto: web::Json<UpdateOrderStatusD
     let arc_pool = SqlServerPool::get_instance().await;
     match arc_pool {
         Ok(pool) => {
-            let repo = MssqlOrderRepository::new(pool.clone());
+            let order_repo = MssqlOrderRepository::new(pool.clone());
+            let order_product_repo = MssqlOrderProductRepository::new(pool.clone());
             let message_publisher = KafkaProducer::new().expect("Failed to create Kafka producer");
-            let use_case = UpdateOrderStatusUseCase::new(Arc::new(repo), Arc::new(message_publisher));
+            let use_case = UpdateOrderStatusUseCase::new(Arc::new(order_repo), Arc::new(order_product_repo), Arc::new(message_publisher));
             let result = use_case.handle(update_status_dto.order_id, update_status_dto.order_status_id).await;
             match result {
                 Ok(updated_order) => 
