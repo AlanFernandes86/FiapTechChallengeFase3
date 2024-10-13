@@ -7,7 +7,7 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     networks:
-      - kafka-net
+      - net
 
   kafka-ui:
     container_name: kafka-ui
@@ -22,7 +22,7 @@ services:
     depends_on:
       - "kafka"
     networks:
-      - kafka-net
+      - net
 
   kafka:
     # "`-._,-'"`-._,-'"`-._,-'"`-._,-'"`-._,-'"`-._,-'"`-._,-'"`-._,-'"`-._,-
@@ -59,7 +59,7 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_JMX_PORT: 9997
     networks:
-      - kafka-net
+      - net
 
   create-topics:
     image: confluentinc/cp-kafka:latest
@@ -75,7 +75,7 @@ services:
         # && kafka-topics --create --topic meu-topico-2 --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092
       "
     networks:
-      - kafka-net
+      - net
   
   mssql:
     image: "mcr.microsoft.com/mssql/server:2022-latest"
@@ -89,12 +89,23 @@ services:
     volumes:
       - mssql_data:/var/opt/mssql
     networks:
-      - kafka-net
+      - net
     restart: always
+
+  db_init:
+    image: "mcr.microsoft.com/mssql-tools"
+    depends_on:
+      - mssql
+    volumes:
+      - ./CreateAndInitDatabase.sql:/usr/src/app/CreateAndInitDatabase.sql
+      - ./init-db.sh:/usr/src/app/init-db.sh
+    networks:
+      - net
+    entrypoint: ["/usr/src/app/init-db.sh"]
 
 volumes:
   mssql_data:
 
 networks:
-  kafka-net:
+  net:
     driver: bridge
