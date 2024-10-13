@@ -34,11 +34,13 @@ Obs* Projeto configurado para executar localmente, para esse exemplo foi utiliza
 
 Disponibilizará o Sql Server e Broker Kafka que serão consumidos pela aplicação.  
 
-![image](https://github.com/user-attachments/assets/025d4d33-d380-411f-96b3-834e5568c9d3)  
+![image](https://github.com/user-attachments/assets/81a260ad-5e2b-46e3-abe6-3696c14b2279)
 
-```kubectl apply -f k8s```  
+```kubectl apply -f k8s/```  
 
 Implantará a aplicação no k8s local  
+
+![image](https://github.com/user-attachments/assets/ac97034f-a5a1-49c7-ba5c-79ad79ed787f)  
 
 ![image](https://github.com/user-attachments/assets/458f66b1-418d-49bd-8a41-584a5bdc695c)
 
