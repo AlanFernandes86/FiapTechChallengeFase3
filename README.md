@@ -8,11 +8,11 @@ O back-end deve permitir:
 
 - Receber novos pedidos
 - Consultar pedido realizado
-- Consultat lista de pedidos ativos
+- Consultar lista de pedidos ativos
 - Atualizar status do pedido
 - Adicionar diversos produtos a um pedido
 - Opção de pagamento integrada para MVP
-- Consultar status do pagamento
+- Publicar updates dos status de ordens
 - Acompanhar o status de cada pedido
 - Cadastrar produtos por categoria
 
@@ -36,8 +36,10 @@ Disponibilizará o Sql Server e Broker Kafka que serão consumidos pela aplicaç
 
 ![image](https://github.com/user-attachments/assets/025d4d33-d380-411f-96b3-834e5568c9d3)  
 
-```kubectl apply -f k8s```
-Implantará a aplicação no k8s local
+```kubectl apply -f k8s```  
+
+Implantará a aplicação no k8s local  
+
 ![image](https://github.com/user-attachments/assets/458f66b1-418d-49bd-8a41-584a5bdc695c)
 
 ## Link da collection do postman para teste local
