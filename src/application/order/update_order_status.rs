@@ -48,7 +48,12 @@ impl UpdateOrderStatusUseCase {
                     let order_products = order_product_repository.get_order_products(order_id).await.unwrap();
                     order.order_products = order_products;
                     order.total = order.calculate_total();
-                    message_publisher.publish_order_status_update(&order).await;                                        
+                    if let Err(e) = message_publisher
+                        .publish_order_status_update(&order)
+                        .await
+                    {
+                        eprintln!("Erro ao publicar evento de atualização da ordem: {}", e);
+                    }                                      
                 },
                 Ok(None) => {},
                 Err(_) => {}
