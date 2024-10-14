@@ -1,4 +1,5 @@
 /target
+/mssql_data
 .vs
 .idea
 .vs/*

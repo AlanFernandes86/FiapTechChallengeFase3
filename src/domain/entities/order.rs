@@ -6,6 +6,7 @@ pub struct Order {
     pub order_client_name: String,
     pub client: Client,
     pub order_status: OrderStatus,
+    pub payment_status: OrderPaymentStatus,
     pub total: f64,
     pub order_products: Vec<OrderProduct>,
     // pub updated_at: chrono::NaiveDateTime,
@@ -28,4 +29,10 @@ impl Order {
 pub struct OrderStatus {
     pub id: i32,
     pub name: String
+}
+
+#[derive(serde::Serialize, Debug)]
+pub struct OrderPaymentStatus {
+    pub id: Option<i32>,
+    pub name: Option<String>    
 }

@@ -35,6 +35,10 @@ impl From<CreateOrderDTO> for Order {
                 id: crate::domain::enums::order_status::OrderStatus::Created as i32,
                 name: format!("{:?}", crate::domain::enums::order_status::OrderStatus::Created)
             },
+            payment_status: crate::domain::entities::order::OrderPaymentStatus {
+                id: None,
+                name: None
+            },
             client: Client {
                 cpf: client_dto.client_cpf,
                 name: "".to_string(),

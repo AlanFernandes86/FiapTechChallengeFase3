@@ -28,11 +28,15 @@ impl OrderRepository for MssqlOrderRepository {
                 c.name AS client_name,
                 c.email AS client_email,
                 os.id AS order_status_id,
-                os.name AS order_status_name
+                os.name AS order_status_name,
+                ps.id AS payment_status_id,
+                ps.name AS payment_status_name
             FROM
                 TechChallenge.dbo.[order] o
                 JOIN TechChallenge.dbo.client c ON o.client_cpf = c.cpf
                 JOIN TechChallenge.dbo.order_status os ON o.order_status_id = os.id
+                LEFT JOIN TechChallenge.dbo.payment p ON o.id = p.order_id
+                LEFT JOIN TechChallenge.dbo.payment_status ps ON p.payment_status_id = ps.id
             WHERE
                 o.id = @p1
             "#
@@ -71,12 +75,14 @@ impl OrderRepository for MssqlOrderRepository {
                 c.email AS client_email,
                 os.id AS order_status_id,
                 os.name AS order_status_name,
-                o.updated_at,
-                o.created_at
+                ps.id AS payment_status_id,
+                ps.name AS payment_status_name
             FROM
                 TechChallenge.dbo.[order] o
                 JOIN TechChallenge.dbo.client c ON o.client_cpf = c.cpf
                 JOIN TechChallenge.dbo.order_status os ON o.order_status_id = os.id
+                LEFT JOIN TechChallenge.dbo.payment p ON o.id = p.order_id
+                LEFT JOIN TechChallenge.dbo.payment_status ps ON p.payment_status_id = ps.id
             WHERE
                 o.order_status_id IN ({})
             "#,

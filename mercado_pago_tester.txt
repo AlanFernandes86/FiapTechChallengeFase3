@@ -4,4 +4,4 @@ BK7ME6INKg
 
 
 proxy ngrok:
-ngrok http --domain mighty-flounder-secondly.ngrok-free.app 8080
+ngrok http http://localhost:8080 

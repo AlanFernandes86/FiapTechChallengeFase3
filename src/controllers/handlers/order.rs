@@ -36,7 +36,7 @@ pub async fn get_order_by_id(path: web::Path<i32>) -> impl Responder {
                         None => HttpResponse::NotFound().body(format!("No order found with the given id {order_id}"))
                     }
                 },
-                Err(_) => HttpResponse::InternalServerError().body("Internal server error")
+                Err(e) => HttpResponse::InternalServerError().body(format!("Internal server error: {e}"))
             }
         },
         Err(_) => return HttpResponse::InternalServerError().body("Database connection error")

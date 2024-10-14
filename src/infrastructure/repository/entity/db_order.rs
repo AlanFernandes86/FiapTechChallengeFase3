@@ -1,4 +1,4 @@
-use crate::domain::entities::{client::Client, order::{Order, OrderStatus}};
+use crate::domain::entities::{client::Client, order::{Order, OrderPaymentStatus, OrderStatus}};
 
 #[derive(sqlx::FromRow)]
 pub struct DbOrder {
@@ -8,7 +8,9 @@ pub struct DbOrder {
     pub client_name: String,
     pub client_email: String,
     pub order_status_id: i32,
-    pub order_status_name: String
+    pub order_status_name: String,
+    pub payment_status_id: Option<i32>,
+    pub payment_status_name: Option<String>,
     // pub updated_at: NaiveDateTime,
     // pub created_at: NaiveDateTime,
 }
@@ -26,6 +28,10 @@ impl From<DbOrder> for Order {
             order_status: OrderStatus {
                 id: db_order.order_status_id,
                 name: db_order.order_status_name
+            },
+            payment_status: OrderPaymentStatus{
+                id: db_order.payment_status_id,
+                name: db_order.payment_status_name
             },
             total: 0.0f64,
             order_products: vec![],
