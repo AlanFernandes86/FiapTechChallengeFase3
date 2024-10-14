@@ -47,7 +47,7 @@ Altere a base url da variável MERCADO_PAGO_NOTIFICATION_URL no arquivo deployme
 Altere somente o que está antes de .../api/v1...
 ![image](https://github.com/user-attachments/assets/56aa6d26-ab23-4db9-b129-1e0768ef6e98)
 
-5. Execute o companto para implatar a aplicação no k8s
+5. Execute o comando para implatar a aplicação no k8s.
    
 ```kubectl apply -f k8s/```  
 
