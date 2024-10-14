@@ -97,11 +97,11 @@ services:
     depends_on:
       - mssql
     volumes:
-      - ./CreateAndInitDatabase.sql:/usr/src/app/CreateAndInitDatabase.sql
-      - ./init-db.sh:/usr/src/app/init-db.sh
+      - ./database/CreateAndInitDatabase.sql:/usr/src/app/CreateAndInitDatabase.sql
+      - ./database/init-db.sh:/usr/src/app/init-db.sh
     networks:
       - net
-    entrypoint: ["/usr/src/app/init-db.sh"]
+    entrypoint: ["/bin/sh", "-c", "chmod +x /usr/src/app/init-db.sh && /usr/src/app/init-db.sh"]
 
 volumes:
   mssql_data:
