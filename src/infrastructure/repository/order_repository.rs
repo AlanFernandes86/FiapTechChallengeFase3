@@ -85,6 +85,7 @@ impl OrderRepository for MssqlOrderRepository {
                 LEFT JOIN TechChallenge.dbo.payment_status ps ON p.payment_status_id = ps.id
             WHERE
                 o.order_status_id IN ({})
+            ORDER BY os.id DESC, o.updated_at DESC
             "#,
             placeholders
         );
