@@ -249,7 +249,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://127.0.0.1:8080/api/v1/order?order_status_id=32",
+					"raw": "http://127.0.0.1:8080/api/v1/order?order_status_id=14",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -266,7 +266,7 @@
 					"query": [
 						{
 							"key": "order_status_id",
-							"value": "32"
+							"value": "14"
 						}
 					]
 				}
@@ -346,7 +346,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"order_id\": 2002,\r\n    \"order_status_id\": 32\r\n}",
+					"raw": "{\r\n    \"order_id\": 1,\r\n    \"order_status_id\": 4\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
