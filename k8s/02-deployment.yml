@@ -35,6 +35,8 @@ spec:
                 secretKeyRef:
                   name: tech-challenge-secrets
                   key: KAFKA_BOOTSTRAP_SERVERS
+            - name: KAFKA_MESSAGE_TIMEOUT_MS
+              value: "30000"
             - name: KAFKA_ORDER_STATUS_UPDATE_TOPIC
               value: "order-status-update"
             - name: DATABASE_URL

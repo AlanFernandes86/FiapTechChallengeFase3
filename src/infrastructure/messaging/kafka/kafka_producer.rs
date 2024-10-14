@@ -11,9 +11,10 @@ impl KafkaProducer {
     pub fn new() -> Result<Self, Box<dyn std::error::Error>> {
         let bootstraps = std::env::var("KAFKA_BOOTSTRAP_SERVERS").expect("KAFKA_BOOTSTRAP_SERVERS not found in .env file");
         let order_status_update_topic = std::env::var("KAFKA_ORDER_STATUS_UPDATE_TOPIC").expect("KAFKA_ORDER_STATUS_UPDATE_TOPIC not found in .env file");
+        let message_timeout = std::env::var("KAFKA_MESSAGE_TIMEOUT_MS").expect("KAFKA_MESSAGE_TIMEOUT_MS not found in .env file");
         let producer: FutureProducer = ClientConfig::new()
             .set("bootstrap.servers", bootstraps)
-            .set("message.timeout.ms", "5000")
+            .set("message.timeout.ms", message_timeout)
             .create()?;
 
         Ok(Self { producer, order_status_update_topic })
