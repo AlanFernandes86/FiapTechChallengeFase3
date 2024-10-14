@@ -58,4 +58,7 @@ Implantará a aplicação no k8s local
 ![image](https://github.com/user-attachments/assets/458f66b1-418d-49bd-8a41-584a5bdc695c)
 
 ## Link da collection do postman para teste local
-https://github.com/AlanFernandes86/FiapTechChallengeFase2/blob/main/TechChallengeFase2.postman_collection.json
+https://github.com/AlanFernandes86/FiapTechChallengeFase2/blob/main/TechChallengeFase2.postman_collection.json  
+
+## Link do video demonstrando o funcionamento da infraestrutura
+https://youtu.be/dzUU80Ew3ko
