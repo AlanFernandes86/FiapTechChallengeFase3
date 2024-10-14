@@ -1,0 +1,6 @@
+/target
+/mssql_data
+.vs
+.idea
+.vs/*
+.vs/slnx.sqlite

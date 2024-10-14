@@ -1,0 +1,7 @@
+Usuário Comprador de Teste:
+TESTUSER2072438090	
+BK7ME6INKg
+
+
+proxy ngrok:
+ngrok http http://localhost:8080 
