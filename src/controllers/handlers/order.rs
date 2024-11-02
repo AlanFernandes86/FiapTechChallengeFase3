@@ -13,7 +13,7 @@ use crate::{
         UpdateOrderStatusDTO 
     }, 
     domain::errors::invalid_order_status_update_error::InvalidOrderStatusUpdateError,
-    infrastructure::{messaging::kafka::kafka_producer::KafkaProducer, repository::{
+    infrastructure::{messaging::kafka::kafka_producer::KafkaProducer, repository::mssql::{
         common::mssql_pool::SqlServerPool,
         order_product_repository::MssqlOrderProductRepository,
         order_repository::MssqlOrderRepository

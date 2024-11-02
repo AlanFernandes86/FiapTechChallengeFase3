@@ -3,8 +3,8 @@ use crate::application::product_category::delete_product_category::DeleteProduct
 use crate::application::product_category::get_product_categories::GetProductCategoriesUseCase;
 use crate::application::product_category::put_product_category::PutProductCategoryUseCase;
 use crate::controllers::models::product_category::ProductCategoryDTO;
-use crate::infrastructure::repository::common::mssql_pool::SqlServerPool;
-use crate::infrastructure::repository::product_category_repository::MssqlProductCategoryRepository;
+use crate::infrastructure::repository::mssql::common::mssql_pool::SqlServerPool;
+use crate::infrastructure::repository::mssql::product_category_repository::MssqlProductCategoryRepository;
 use serde_json::json;
 
 #[get("")]

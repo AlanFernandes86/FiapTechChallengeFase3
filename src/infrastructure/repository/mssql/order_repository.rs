@@ -4,7 +4,7 @@ use async_trait::async_trait;
 use sqlx::mssql::MssqlPool;
 use crate::domain::entities::order::Order;
 use crate::domain::repository::order_repository::OrderRepository;
-use crate::infrastructure::repository::entity::db_order::DbOrder;
+use crate::infrastructure::repository::mssql::entity::db_order::DbOrder;
 
 pub struct MssqlOrderRepository {
     pool: Arc<MssqlPool>,

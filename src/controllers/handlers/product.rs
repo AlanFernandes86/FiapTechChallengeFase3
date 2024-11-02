@@ -8,7 +8,7 @@ use crate::{
             ProductDTO,
             ProductQuery
         },
-        infrastructure::repository::{
+        infrastructure::repository::mssql::{
             common::mssql_pool::SqlServerPool,
             product_repository::MssqlProductRepository
         }

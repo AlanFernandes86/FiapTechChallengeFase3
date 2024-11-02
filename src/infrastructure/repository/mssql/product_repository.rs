@@ -4,7 +4,7 @@ use async_trait::async_trait;
 use sqlx::mssql::MssqlPool;
 use crate::domain::entities::product::Product;
 use crate::domain::repository::product_repository::ProductRepository;
-use crate::infrastructure::repository::entity::db_product::DbProduct;
+use crate::infrastructure::repository::mssql::entity::db_product::DbProduct;
 
 pub struct MssqlProductRepository {
     pool: Arc<MssqlPool>,

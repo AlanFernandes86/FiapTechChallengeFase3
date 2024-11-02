@@ -3,7 +3,7 @@ use actix_web::{web, put, delete, HttpResponse, Responder};
 use crate::{
     application::order_product::{delete_order_product::DeleteOrderProductUseCase, put_order_product::PutOrderProductUseCase},
     controllers::models::order_product::PutOrderProductDTO,
-    infrastructure::repository::{
+    infrastructure::repository::mssql::{
         common::mssql_pool::SqlServerPool,
         order_product_repository::MssqlOrderProductRepository
     }

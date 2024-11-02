@@ -1,8 +1,8 @@
 use actix_web::{web, get, post, HttpResponse, Responder};
 use crate::application::client::get_client_by_cpf::GetClientByCpfUseCase;
 use crate::application::client::set_client::SetClientUseCase;
-use crate::infrastructure::repository::client_repository::MssqlClientRepository;
-use crate::infrastructure::repository::common::mssql_pool::SqlServerPool;
+use crate::infrastructure::repository::mssql::client_repository::MssqlClientRepository;
+use crate::infrastructure::repository::mssql::common::mssql_pool::SqlServerPool;
 use crate::controllers::models::client::ClientDTO;
 
 #[get("/{cpf}")]

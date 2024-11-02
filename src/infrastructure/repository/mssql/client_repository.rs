@@ -4,7 +4,7 @@ use async_trait::async_trait;
 use sqlx::mssql::MssqlPool;
 use crate::domain::entities::client::Client;
 use crate::domain::repository::client_repository::ClientRepository;
-use crate::infrastructure::repository::entity::db_client::DbClient;
+use crate::infrastructure::repository::mssql::entity::db_client::DbClient;
 
 pub struct MssqlClientRepository {
     pool: Arc<MssqlPool>,

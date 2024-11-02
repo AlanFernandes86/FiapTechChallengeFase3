@@ -4,20 +4,20 @@ use async_trait::async_trait;
 use sqlx::mssql::MssqlPool;
 use crate::domain::entities::product_category::ProductCategory;
 use crate::domain::repository::product_category_repository::ProductCategoryRepository;
-use crate::infrastructure::repository::entity::db_product_category::DbProductCategory;
+use crate::infrastructure::repository::mssql::entity::db_product_category::DbProductCategory;
 
-pub struct MssqlProductCategoryRepository {
+pub struct DynamoDbProductCategoryRepository {
     pool: Arc<MssqlPool>,
 }
 
-impl MssqlProductCategoryRepository {
+impl DynamoDbProductCategoryRepository {
     pub fn new(pool: Arc<MssqlPool>) -> Self {
-        MssqlProductCategoryRepository { pool }
+        DynamoDbProductCategoryRepository { pool }
     }
 }
 
 #[async_trait]
-impl ProductCategoryRepository for MssqlProductCategoryRepository {
+impl ProductCategoryRepository for DynamoDbProductCategoryRepository {
     async fn get_product_categories(&self) -> Result<Option<Vec<ProductCategory>>, Box<dyn Error>> {
         let result = sqlx::query_as::<_, DbProductCategory>(
             "SELECT id, name, description FROM TechChallenge.dbo.product_category"

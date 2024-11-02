@@ -4,6 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+aws-sdk-dynamodb = "1.52.0"
+aws-config = { version = "1.1.7", features = ["behavior-version-latest"] }
 dotenv = "0.15"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1.0"
