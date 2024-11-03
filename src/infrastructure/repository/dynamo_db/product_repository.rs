@@ -5,7 +5,6 @@ use aws_sdk_dynamodb::error::SdkError;
 use aws_sdk_dynamodb::types::AttributeValue;
 use aws_sdk_dynamodb::error::ProvideErrorMetadata;
 use aws_sdk_dynamodb::Client;
-use crate::application::product;
 use crate::domain::entities::product::Product;
 use crate::domain::entities::product_category::ProductCategory;
 use crate::domain::repository::product_repository::ProductRepository;
