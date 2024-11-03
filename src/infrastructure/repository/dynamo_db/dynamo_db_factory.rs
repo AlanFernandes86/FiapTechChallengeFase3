@@ -1,5 +1,5 @@
 use once_cell::sync::OnceCell;
-use std::sync::Arc;
+use std::{env, sync::Arc};
 use aws_sdk_dynamodb::{Client,Error};
 use aws_config;
 
