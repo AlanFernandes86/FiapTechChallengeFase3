@@ -7,5 +7,6 @@ pub struct Product {
     pub description: String,
     pub price: f64,
     pub image_url: String,
+    pub available: bool,
     pub product_category: ProductCategory
 }

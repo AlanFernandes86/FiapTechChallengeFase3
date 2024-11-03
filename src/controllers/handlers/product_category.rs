@@ -3,7 +3,7 @@ use crate::application::product_category::delete_product_category::DeleteProduct
 use crate::application::product_category::get_product_categories::GetProductCategoriesUseCase;
 use crate::application::product_category::put_product_category::PutProductCategoryUseCase;
 use crate::controllers::models::product_category::ProductCategoryDTO;
-use crate::infrastructure::repository::dynamo_db::dynamo_db_factory::DynamoDbFactory;
+use crate::infrastructure::repository::dynamo_db::common::dynamo_db_factory::DynamoDbFactory;
 use crate::infrastructure::repository::dynamo_db::product_category_repository::DynamoDbProductCategoryRepository;
 use serde_json::json;
 

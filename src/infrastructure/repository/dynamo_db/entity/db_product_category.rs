@@ -22,7 +22,7 @@ impl DbProductCategory {
         let description = item.get("description")
             .and_then(|v| v.as_s().ok())
             .map(String::from)
-            .unwrap_or_default(); // Ou trate como preferir, ex: ok_or("Missing 'description'")
+            .unwrap_or_default(); 
 
         Self { id, name, description }        
     }

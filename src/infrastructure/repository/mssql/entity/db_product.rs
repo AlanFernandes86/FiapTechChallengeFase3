@@ -20,6 +20,7 @@ impl From<DbProduct> for Product {
             description: db_product.description,
             price: db_product.price,
             image_url: db_product.image_url,
+            available: true,
             product_category: ProductCategory {
                 id: db_product.product_category_id,
                 name: db_product.product_category_name,
