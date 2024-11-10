@@ -13,14 +13,6 @@ impl GetOrderByIdUseCase {
     }
 
     pub async fn handle(&self, order_id: i32) -> Result<Option<Order>, Box<dyn Error + Send + Sync>> {
-        let get_order_result = self.order_repository.get_order_by_id(order_id).await;
-        match get_order_result {
-            Ok(Some(mut order)) => {
-                order.total = order.calculate_total();
-                Ok(Some(order))       
-            },
-            Ok(None) => Ok(None),
-            Err(e) => Err(e)
-        }
+        self.order_repository.get_order_by_id(order_id).await 
     }
 }

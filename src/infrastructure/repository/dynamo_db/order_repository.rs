@@ -5,6 +5,7 @@ use async_trait::async_trait;
 use aws_sdk_dynamodb::types::AttributeValue;
 use aws_sdk_dynamodb::Client;
 use futures::future::join_all;
+use crate::domain;
 use crate::domain::entities::order::Order;
 use crate::domain::repository::order_repository::OrderRepository;
 use crate::infrastructure::repository::dynamo_db::common::dynamo_db_counters::DynamoDbCounters;
@@ -37,7 +38,9 @@ impl OrderRepository for DynamoDbOrderRepository {
             Ok(output) => {
                 if let Some(item) = output.item {
                     let db_order = DbOrder::from_item(item);
-                    Ok(Some(db_order.into()))
+                    let mut domain_order: Order = db_order.into();
+                    domain_order.total = domain_order.calculate_total();
+                    Ok(Some(domain_order))
                 }
                 else {
                     Ok(None)

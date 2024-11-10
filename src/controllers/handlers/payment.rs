@@ -3,11 +3,11 @@ use std::sync::Arc;
 use actix_web::{web, post, HttpResponse, Responder};
 
 use crate::{
-    application::{order::{get_order_by_id::GetOrderByIdUseCase, update_order_status::UpdateOrderStatusUseCase}, payment::{mercado_pago_notification::MercadoPagoNotificationUseCase, start_payment::StartPaymentUseCase}}, 
+    application::{order::update_order_status::UpdateOrderStatusUseCase, payment::{mercado_pago_notification::MercadoPagoNotificationUseCase, start_payment::StartPaymentUseCase}}, 
     controllers::models::payment::{MercadoPagoNotificationDTO, StartPaymentDTO}, 
     domain::enums::payment_method::EnPaymentMethod, 
     infrastructure::{messaging::kafka::kafka_producer::KafkaProducer, 
-    repository::mssql::{common::mssql_pool::SqlServerPool, order_repository::MssqlOrderRepository, payment_repository::MssqlPaymentRepository}, 
+    repository::dynamo_db::{common::dynamo_db_factory::DynamoDbFactory, order_repository::DynamoDbOrderRepository, payment_repository::DynamoDbPaymentRepository}, 
     service::mercado_pago::mercado_pago_service::MercadoPagoService}
 };
 
@@ -19,18 +19,17 @@ pub async fn start_payment(start_payment: web::Json<StartPaymentDTO>) -> impl Re
         Err(_) => return HttpResponse::BadRequest().json("Método de pagamento inválido."),
     };
     
-    let arc_pool = SqlServerPool::get_instance().await;
-    match arc_pool {
-        Ok(pool)=> {
-            let order_repo = MssqlOrderRepository::new(pool.clone());
+    let get_instance_result = DynamoDbFactory::get_instance().await;
+    match get_instance_result {
+        Ok(dynamo_db_client)=> {
+            let order_repo = DynamoDbOrderRepository::new(dynamo_db_client.clone());
             let service = match payment_method {
                 EnPaymentMethod::MercadoPago => MercadoPagoService::new(reqwest::Client::new()),
                 _ => {
                     return HttpResponse::BadRequest().json("Método de pagamento não implementado.");
                 }
             };
-            let get_order_by_id_use_case = GetOrderByIdUseCase::new(Box::new(order_repo));
-            let start_payment_use_case = StartPaymentUseCase::new(Box::new(get_order_by_id_use_case), Box::new(service));
+            let start_payment_use_case = StartPaymentUseCase::new(Box::new(order_repo), Box::new(service));
             
             let order_id = start_payment_dto.order_id;
             let result = start_payment_use_case.handle(start_payment_dto).await;
@@ -58,11 +57,11 @@ pub async fn start_payment(start_payment: web::Json<StartPaymentDTO>) -> impl Re
 #[post("/mercado_pago_notification")]
 pub async fn mercado_pago_notification(mercado_pago_notification: web::Json<MercadoPagoNotificationDTO>) -> impl Responder {
     let mercado_pago_notification_dto = mercado_pago_notification.into_inner();
-    let arc_pool = SqlServerPool::get_instance().await;
-    match arc_pool {
-        Ok(pool)=> {
-            let payment_repo = MssqlPaymentRepository::new(pool.clone());
-            let order_repo = MssqlOrderRepository::new(pool.clone());
+    let get_instance_result = DynamoDbFactory::get_instance().await;
+    match get_instance_result {
+        Ok(dynamo_db_client)=> {
+            let order_repo = DynamoDbOrderRepository::new(dynamo_db_client.clone());
+            let payment_repo = DynamoDbPaymentRepository::new(dynamo_db_client.clone());
             let message_publisher = KafkaProducer::new().expect("Failed to create Kafka producer");
             let mercado_pago_service = MercadoPagoService::new(reqwest::Client::new());
             let updated_order_status_use_case = UpdateOrderStatusUseCase::new(Arc::new(order_repo), Arc::new(message_publisher));

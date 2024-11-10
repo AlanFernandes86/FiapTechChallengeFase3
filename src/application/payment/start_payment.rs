@@ -1,27 +1,26 @@
 use std::error::Error;
 use crate::{
-        application::order::get_order_by_id::GetOrderByIdUseCase, 
-        controllers::models::payment::StartPaymentDTO, domain::{enums::payment_status::EnPaymentStatus, service::{models::start_payment_response::StartPaymentResponse, payment_service::PaymentService}}
+        controllers::models::payment::StartPaymentDTO, domain::{enums::payment_status::EnPaymentStatus, repository::order_repository::OrderRepository, service::{models::start_payment_response::StartPaymentResponse, payment_service::PaymentService}}
     };
 
 pub struct StartPaymentUseCase {
-    get_order_by_id_use_case: Box<GetOrderByIdUseCase>,
+    order_repository: Box<dyn OrderRepository>,
     payment_service: Box<dyn PaymentService>
 }
 
 impl StartPaymentUseCase {
     pub fn new(
-        get_order_by_id_use_case: Box<GetOrderByIdUseCase>,
+        order_repository: Box<dyn OrderRepository>,
         payment_service: Box<dyn PaymentService>
     ) -> Self {
         Self {
-            get_order_by_id_use_case,
+            order_repository,
             payment_service,
         }
     }
 
     pub async fn handle(&self, start_payment_dto: StartPaymentDTO) -> Result<Option<StartPaymentResponse>, Box<dyn Error>> {
-        let result_get_order = self.get_order_by_id_use_case.handle(start_payment_dto.order_id).await;
+        let result_get_order = self.order_repository.get_order_by_id(start_payment_dto.order_id).await;
         match  result_get_order {
             Ok(Some(order)) => {
                 if order.order_payment.id.is_some_and(|id| id == EnPaymentStatus::Paid as i32) {
