@@ -14,7 +14,7 @@ use crate::{
     }, order_product::PutOrderProductDTO}, 
     domain::errors::invalid_order_status_update_error::InvalidOrderStatusUpdateError,
     infrastructure::{messaging::kafka::kafka_producer::KafkaProducer, repository::dynamo_db::{
-        common::dynamo_db_factory::DynamoDbFactory, order_product_repository::DynamoDbOrderProductRepository, order_repository::DynamoDbOrderRepository},
+        client_repository::DynamoDbClientRepository, common::dynamo_db_factory::DynamoDbFactory, order_product_repository::DynamoDbOrderProductRepository, order_repository::DynamoDbOrderRepository, product_repository::DynamoDbProductRepository},
     }};
 
 #[get("/{orderId}")]
@@ -69,8 +69,10 @@ pub async fn create_order(create_order_dto: web::Json<CreateOrderDTO>) -> impl R
     let get_instance_result = DynamoDbFactory::get_instance().await;
     match get_instance_result {
         Ok(dynamo_db_client)=> {
-            let repo = DynamoDbOrderRepository::new(dynamo_db_client.clone());
-            let use_case = CreateOrderUseCase::new(Box::new(repo));
+            let order_repo = DynamoDbOrderRepository::new(dynamo_db_client.clone());
+            let client_repo = DynamoDbClientRepository::new(dynamo_db_client.clone());
+            let product_repo = DynamoDbProductRepository::new(dynamo_db_client.clone());
+            let use_case = CreateOrderUseCase::new(Box::new(order_repo), Box::new(client_repo), Box::new(product_repo));
             let result = use_case.handle(order).await;
         
             match result {

@@ -26,6 +26,71 @@ impl DynamoDbProductRepository {
 
 #[async_trait]
 impl ProductRepository for DynamoDbProductRepository {
+    async fn get_product_by_id(&self, product_id: i32) -> Result<Option<Product>, Box<dyn Error>> {
+        let result = self.client
+            .query()
+            .table_name("product")
+            .index_name("sk-index")
+            .key_condition_expression("sk = :product_id")
+            .expression_attribute_values(":product_id", AttributeValue::S(format!("PRODUCT#{}", product_id).to_string()))
+            .send()
+            .await;
+
+        match result {
+            Ok(output) => {
+                if output.items.is_none() {
+                    return Ok(None);
+                }
+                if let Some(items) = output.items {
+                    for item in items {
+                        if let Some(sk) = item.get("sk") {
+                            if sk.as_s().map(|s| s.as_str()) == Ok(format!("PRODUCT#{}", product_id).as_str()) {
+                                let mut product = DbProduct::from_item(item.clone()).into_domain();
+                                
+                                let category_id = item.get("pk")
+                                    .and_then(|v| v.as_s().ok())
+                                    .unwrap();             
+
+                                let product_category_item = self.client
+                                    .get_item()
+                                    .table_name("product")
+                                    .key("pk", AttributeValue::S(category_id.to_string()))
+                                    .key("sk", AttributeValue::S("CATEGORY#metadata".to_string()))
+                                    .send()
+                                    .await;
+                                
+                                match product_category_item {
+                                    Ok(output) => {
+                                        if let Some(item) = output.item {
+                                            product.product_category = DbProductCategory::from_item(item).into_domain();
+                                        }
+                                    },
+                                    Err(e) => {
+                                        let error_message = format!(
+                                            "Error querying DynamoDB: {:?}",
+                                            e.as_service_error()
+                                        );
+                                        return Err(Box::new(std::io::Error::new(std::io::ErrorKind::Other, error_message)));
+                                    }                                    
+                                }
+
+                                return Ok(Some(product));
+                            }
+                        }
+                    }
+                }
+                Ok(None)
+            },
+            Err(e) => {
+                let error_message = format!(
+                    "Error querying DynamoDB: {:?}",
+                    e.as_service_error()
+                );
+                Err(Box::new(std::io::Error::new(std::io::ErrorKind::Other, error_message)))
+            }            
+        }      
+    }
+
     async fn get_products_by_category(&self, product_category_id: i32) -> Result<Option<Vec<Product>>, Box<dyn Error>> {
       let result = self.client
       .query()

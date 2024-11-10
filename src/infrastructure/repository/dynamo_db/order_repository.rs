@@ -101,8 +101,10 @@ impl OrderRepository for DynamoDbOrderRepository {
         order_item.insert("pk".to_string(), AttributeValue::S(format!("ORDER#{}", order_id)));
         order_item.insert("sk".to_string(), AttributeValue::S("ORDER#details".to_string()));
         order_item.insert("order_id".to_string(), AttributeValue::N(order_id.to_string()));
+        order_item.insert("order_client_name".to_string(), AttributeValue::S(order.client.name.to_string()));
         order_item.insert("client_name".to_string(), AttributeValue::S(order.client.name.to_string()));
         order_item.insert("client_cpf".to_string(), AttributeValue::S(order.client.cpf.to_string()));
+        order_item.insert("client_email".to_string(), AttributeValue::S(order.client.email.to_string()));
         order_item.insert("order_status_id".to_string(), AttributeValue::N(order.order_status.id.to_string()));
         order_item.insert("created_at".to_string(), AttributeValue::S(timestamp.clone()));
         order_item.insert("updated_at".to_string(), AttributeValue::S(timestamp.clone()));
@@ -119,7 +121,7 @@ impl OrderRepository for DynamoDbOrderRepository {
             order_product_item.insert("price".to_string(), AttributeValue::N(order_product.price.to_string()));
             order_product_item.insert("description".to_string(), AttributeValue::S(order_product.description.to_string()));
             order_product_item.insert("image_url".to_string(), AttributeValue::S(order_product.image_url.to_string()));
-            order_product_item.insert("product_category_id".to_string(), AttributeValue::S(order_product.product_category.id.to_string()));
+            order_product_item.insert("product_category_id".to_string(), AttributeValue::N(order_product.product_category.id.to_string()));
             order_product_item.insert("product_category_name".to_string(), AttributeValue::S(order_product.product_category.name.to_string()));
             order_product_item.insert("product_category_description".to_string(), AttributeValue::S(order_product.product_category.description.to_string()));
             order_product_item.insert("created_at".to_string(), AttributeValue::S(timestamp.clone()));
