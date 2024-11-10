@@ -1,6 +1,5 @@
 use std::sync::Arc;
 use std::error::Error;
-use actix_web::rt::time;
 use async_trait::async_trait;
 use aws_sdk_dynamodb::types::AttributeValue;
 use aws_sdk_dynamodb::Client;

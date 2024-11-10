@@ -5,7 +5,6 @@ use async_trait::async_trait;
 use aws_sdk_dynamodb::types::AttributeValue;
 use aws_sdk_dynamodb::Client;
 use futures::future::join_all;
-use crate::domain;
 use crate::domain::entities::order::Order;
 use crate::domain::repository::order_repository::OrderRepository;
 use crate::infrastructure::repository::dynamo_db::common::dynamo_db_counters::DynamoDbCounters;
