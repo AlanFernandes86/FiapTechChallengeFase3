@@ -1,5 +1,7 @@
+use std::fmt;
+
 #[derive(Debug)]
-pub enum OrderStatus {
+pub enum EnOrderStatus {
     Created = 1,
     Received = 2,
     InPreparation = 4,
@@ -9,16 +11,30 @@ pub enum OrderStatus {
     Active = 14 // only for search purposes [Received, InPreparation, Ready]
 }
 
-impl OrderStatus {
-    pub fn from_id(id: i32) -> Result<OrderStatus, String> {
+impl EnOrderStatus {
+    pub fn from_id(id: i32) -> Result<EnOrderStatus, String> {
         match id {
-            1 => Ok(OrderStatus::Created),
-            2 => Ok(OrderStatus::Received),
-            4 => Ok(OrderStatus::InPreparation),
-            8 => Ok(OrderStatus::Ready),
-            16 => Ok(OrderStatus::Completed),
-            32 => Ok(OrderStatus::Cancelled),
+            1 => Ok(EnOrderStatus::Created),
+            2 => Ok(EnOrderStatus::Received),
+            4 => Ok(EnOrderStatus::InPreparation),
+            8 => Ok(EnOrderStatus::Ready),
+            16 => Ok(EnOrderStatus::Completed),
+            32 => Ok(EnOrderStatus::Cancelled),
             _ => Err(format!("OrderStatus with id [{}] does not exist.", id))     
+        }
+    }
+}
+
+impl fmt::Display for EnOrderStatus {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            EnOrderStatus::Created => write!(f, "Created"),
+            EnOrderStatus::Received => write!(f, "Received"),
+            EnOrderStatus::InPreparation => write!(f, "InPreparation"),
+            EnOrderStatus::Ready => write!(f, "Ready"),
+            EnOrderStatus::Completed => write!(f, "Completed"),
+            EnOrderStatus::Cancelled => write!(f, "Cancelled"),
+            EnOrderStatus::Active => write!(f, "Active")
         }
     }
 }

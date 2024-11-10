@@ -1,4 +1,4 @@
-use crate::domain::entities::{client::Client, order::{Order, OrderPaymentStatus, OrderStatus}};
+use crate::domain::entities::{client::Client, order::{Order, OrderPayment, OrderStatus}};
 
 #[derive(sqlx::FromRow)]
 pub struct DbOrder {
@@ -29,7 +29,7 @@ impl From<DbOrder> for Order {
                 id: db_order.order_status_id,
                 name: db_order.order_status_name
             },
-            payment_status: OrderPaymentStatus{
+            order_payment: OrderPayment{
                 id: db_order.payment_status_id,
                 name: db_order.payment_status_name
             },

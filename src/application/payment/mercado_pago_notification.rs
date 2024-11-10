@@ -3,7 +3,7 @@ use crate::{
         application::order::update_order_status::UpdateOrderStatusUseCase, 
         controllers::models::payment::MercadoPagoNotificationDTO, domain::{
             entities::payment::Payment,
-            enums::{order_status::OrderStatus, payment_method::PaymentMethod, payment_status::PaymentStatus},
+            enums::{order_status::EnOrderStatus, payment_method::EnPaymentMethod, payment_status::EnPaymentStatus},
             repository::payment_repository::PaymentRepository
         }, 
         infrastructure::service::mercado_pago::{mercado_pago_service::MercadoPagoService, merchant_order_response::MerchantOrderResponse}
@@ -44,7 +44,7 @@ impl MercadoPagoNotificationUseCase {
             "closed" => {
                 self.paid_payment_in_database(&merchant_order).await?;
                 let (_, order_id) = self.get_origin_and_order_id(&merchant_order.external_reference);
-                let update_order_status_result = self.updated_order_status_use_case.handle(order_id, OrderStatus::Received as i32).await;
+                let update_order_status_result = self.updated_order_status_use_case.handle(order_id, EnOrderStatus::Received as i32).await;
                 match update_order_status_result {
                     Ok(_) => {},
                     Err(e) => return Err(e)
@@ -64,8 +64,8 @@ impl MercadoPagoNotificationUseCase {
         let payment = Payment {
             id: None,
             order_id: order_id,
-            payment_status_id: PaymentStatus::Pending as i32,
-            payment_method_id: PaymentMethod::MercadoPago as i32,
+            payment_status_id: EnPaymentStatus::Pending as i32,
+            payment_method_id: EnPaymentMethod::MercadoPago as i32,
             payment_method_order_id: merchant_order.id.to_string(),
             value: merchant_order.total_amount,
             origin: origin,
@@ -83,8 +83,8 @@ impl MercadoPagoNotificationUseCase {
         let payment = Payment {
             id: None,
             order_id: order_id,
-            payment_status_id: PaymentStatus::Paid as i32,
-            payment_method_id: PaymentMethod::MercadoPago as i32,
+            payment_status_id: EnPaymentStatus::Paid as i32,
+            payment_method_id: EnPaymentMethod::MercadoPago as i32,
             payment_method_order_id: merchant_order.id.to_string(),
             value: merchant_order.total_amount,
             origin: origin,
@@ -102,8 +102,8 @@ impl MercadoPagoNotificationUseCase {
       let payment = Payment {
           id: None,
           order_id: order_id,
-          payment_status_id: PaymentStatus::Cancelled as i32,
-          payment_method_id: PaymentMethod::MercadoPago as i32,
+          payment_status_id: EnPaymentStatus::Cancelled as i32,
+          payment_method_id: EnPaymentMethod::MercadoPago as i32,
           payment_method_order_id: merchant_order.id.to_string(),
           value: merchant_order.total_amount,
           origin,

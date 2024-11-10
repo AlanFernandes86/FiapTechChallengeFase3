@@ -6,7 +6,7 @@ pub struct Order {
     pub order_client_name: String,
     pub client: Client,
     pub order_status: OrderStatus,
-    pub payment_status: OrderPaymentStatus,
+    pub order_payment: OrderPayment,
     pub total: f64,
     pub order_products: Vec<OrderProduct>,
     // pub updated_at: chrono::NaiveDateTime,
@@ -17,7 +17,7 @@ impl Order {
     pub fn is_this_valid_status_update(&self, id: i32) -> bool {
         self.order_status.id != id
         && self.order_status.id < id
-        && crate::domain::enums::order_status::OrderStatus::from_id(id).is_ok()
+        && crate::domain::enums::order_status::EnOrderStatus::from_id(id).is_ok()
     }
 
     pub fn calculate_total(&self) -> f64 {
@@ -32,7 +32,7 @@ pub struct OrderStatus {
 }
 
 #[derive(serde::Serialize, Debug)]
-pub struct OrderPaymentStatus {
+pub struct OrderPayment {
     pub id: Option<i32>,
     pub name: Option<String>    
 }

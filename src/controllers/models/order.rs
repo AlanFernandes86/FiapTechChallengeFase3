@@ -30,18 +30,18 @@ impl From<CreateOrderDTO> for Order {
     fn from(client_dto: CreateOrderDTO) -> Self {
         Order {
             id: 0,
-            order_client_name: client_dto.client_name,
+            order_client_name: client_dto.client_name.clone(),
             order_status: crate::domain::entities::order::OrderStatus {
-                id: crate::domain::enums::order_status::OrderStatus::Created as i32,
-                name: format!("{:?}", crate::domain::enums::order_status::OrderStatus::Created)
+                id: crate::domain::enums::order_status::EnOrderStatus::Created as i32,
+                name: format!("{:?}", crate::domain::enums::order_status::EnOrderStatus::Created)
             },
-            payment_status: crate::domain::entities::order::OrderPaymentStatus {
+            order_payment: crate::domain::entities::order::OrderPayment {
                 id: None,
                 name: None
             },
             client: Client {
                 cpf: client_dto.client_cpf,
-                name: "".to_string(),
+                name: client_dto.client_name,
                 email: "".to_string(),
             },
             order_products: client_dto.products.into_iter().map(|product| OrderProduct {

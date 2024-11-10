@@ -48,12 +48,14 @@ impl ProductRepository for DynamoDbProductRepository {
               if let Some(sk) = item.get("sk") {
                 match sk.as_s().map(|s| s.as_str()) {
                   Ok("CATEGORY#metadata") => {
+                    println!("Product category found");
                     let product_category_db = DbProductCategory::from_item(item);
                     product_category.id = product_category_db.id;
                     product_category.name = product_category_db.name;
                     product_category.description = product_category_db.description;
                   }
                   Ok(_) => {
+                    println!("Product found");
                     let product = DbProduct::from_item(item).into_domain();
                     products.push(product);
                   },
@@ -65,6 +67,7 @@ impl ProductRepository for DynamoDbProductRepository {
             }
 
             for product in products.iter_mut() {
+              println!("Setting product category for product");
               product.product_category = product_category.clone();
             }
 
@@ -141,10 +144,6 @@ impl ProductRepository for DynamoDbProductRepository {
           
               println!("Item updated successfully.");
               Ok(())
-          },
-          Err(SdkError::ServiceError(err)) => {
-              let error_message = format!("Service error querying DynamoDB: {:?}", err);
-              Err(Box::new(std::io::Error::new(std::io::ErrorKind::Other, error_message)))
           },
           Err(e) => {
               let error_message = format!("Unexpected error querying DynamoDB: {:?}", e);

@@ -13,21 +13,20 @@ use crate::{
         UpdateOrderStatusDTO 
     }, 
     domain::errors::invalid_order_status_update_error::InvalidOrderStatusUpdateError,
-    infrastructure::{messaging::kafka::kafka_producer::KafkaProducer, repository::mssql::{
+    infrastructure::{messaging::kafka::kafka_producer::KafkaProducer, repository::{dynamo_db::{common::dynamo_db_factory::DynamoDbFactory, order_repository::DynamoDbOrderRepository}, mssql::{
         common::mssql_pool::SqlServerPool,
         order_product_repository::MssqlOrderProductRepository,
         order_repository::MssqlOrderRepository
-    }}};
+    }}}};
 
 #[get("/{orderId}")]
 pub async fn get_order_by_id(path: web::Path<i32>) -> impl Responder {
     let order_id = path.into_inner();
-    let arc_pool = SqlServerPool::get_instance().await;    
-    match arc_pool {
-        Ok(pool) => {
-            let order_repo = MssqlOrderRepository::new(pool.clone());
-            let order_product_repo = MssqlOrderProductRepository::new(pool.clone());
-            let use_case = GetOrderByIdUseCase::new(Box::new(order_repo), Box::new(order_product_repo));
+    let get_instance_result = DynamoDbFactory::get_instance().await;
+    match get_instance_result {
+        Ok(dynamo_db_client)=> {
+            let repo = DynamoDbOrderRepository::new(dynamo_db_client.clone());
+            let use_case = GetOrderByIdUseCase::new(Box::new(repo));
             let result = use_case.handle(order_id).await;
             match result {
                 Ok(option) => {
@@ -46,12 +45,11 @@ pub async fn get_order_by_id(path: web::Path<i32>) -> impl Responder {
 #[get("")]
 pub async fn get_orders(get_orders_query: web::Query<GetOrdersQuery>) -> impl Responder {
     let order_status_id = get_orders_query.into_inner().order_status_id;
-    let arc_pool = SqlServerPool::get_instance().await;    
-    match arc_pool {
-        Ok(pool) => {
-            let order_repo = MssqlOrderRepository::new(pool.clone());
-            let order_product_repo = MssqlOrderProductRepository::new(pool.clone());
-            let use_case = GetOrdersByStatusUseCase::new(Box::new(order_repo), Box::new(order_product_repo));
+    let get_instance_result = DynamoDbFactory::get_instance().await;
+    match get_instance_result {
+        Ok(dynamo_db_client)=> {
+            let repo = DynamoDbOrderRepository::new(dynamo_db_client.clone());
+            let use_case = GetOrdersByStatusUseCase::new(Box::new(repo));
             let result = use_case.handle(order_status_id).await;
             match result {
                 Ok(option) => {
@@ -70,10 +68,10 @@ pub async fn get_orders(get_orders_query: web::Query<GetOrdersQuery>) -> impl Re
 #[post("")]
 pub async fn create_order(create_order_dto: web::Json<CreateOrderDTO>) -> impl Responder {
     let order = create_order_dto.into_inner().into();
-    let arc_pool = SqlServerPool::get_instance().await;
-    match arc_pool {
-        Ok(pool)=> {
-            let repo = MssqlOrderRepository::new(pool.clone());
+    let get_instance_result = DynamoDbFactory::get_instance().await;
+    match get_instance_result {
+        Ok(dynamo_db_client)=> {
+            let repo = DynamoDbOrderRepository::new(dynamo_db_client.clone());
             let use_case = CreateOrderUseCase::new(Box::new(repo));
             let result = use_case.handle(order).await;
         
@@ -89,13 +87,12 @@ pub async fn create_order(create_order_dto: web::Json<CreateOrderDTO>) -> impl R
 #[patch("")]
 pub async fn update_order_status(update_status_dto: web::Json<UpdateOrderStatusDTO>) -> impl Responder {
     let update_status_dto = update_status_dto.into_inner();
-    let arc_pool = SqlServerPool::get_instance().await;
-    match arc_pool {
-        Ok(pool) => {
-            let order_repo = MssqlOrderRepository::new(pool.clone());
-            let order_product_repo = MssqlOrderProductRepository::new(pool.clone());
+    let get_instance_result = DynamoDbFactory::get_instance().await;
+    match get_instance_result {
+        Ok(dynamo_db_client)=> {
+            let repo = DynamoDbOrderRepository::new(dynamo_db_client.clone());
             let message_publisher = KafkaProducer::new().expect("Failed to create Kafka producer");
-            let use_case = UpdateOrderStatusUseCase::new(Arc::new(order_repo), Arc::new(order_product_repo), Arc::new(message_publisher));
+            let use_case = UpdateOrderStatusUseCase::new(Arc::new(repo), Arc::new(message_publisher));
             let result = use_case.handle(update_status_dto.order_id, update_status_dto.order_status_id).await;
             match result {
                 Ok(updated_order) => 
