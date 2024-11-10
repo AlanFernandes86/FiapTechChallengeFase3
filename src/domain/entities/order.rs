@@ -21,7 +21,7 @@ impl Order {
     }
 
     pub fn calculate_total(&self) -> f64 {
-        self.order_products.iter().fold(0.0, |acc, op| acc + op.price * op.quantity as f64)
+        (self.order_products.iter().fold(0.0, |acc, op| acc + op.price * op.quantity as f64) * 100.0).round() / 100.0
     }
 }
 

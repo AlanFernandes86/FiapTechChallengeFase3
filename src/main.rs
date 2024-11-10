@@ -1,6 +1,7 @@
 use std::env;
 use dotenv::dotenv;
 use actix_web::{web, App, HttpResponse, HttpServer};
+use infrastructure::repository::memory_cache::load_products::LoadProducts;
 mod controllers;
 mod application;
 mod infrastructure;
@@ -13,6 +14,14 @@ async fn main() -> std::io::Result<()> {
     let is_local = env::var("ENVIRONMENT").unwrap_or_else(|_| "local".to_string()) == "local";
     if is_local {
         dotenv().ok();
+    }
+
+    println!("Loading products...");
+    let loader = LoadProducts::new();
+    let result = loader.load_products().await;
+    match result {
+        Ok(_) => println!("Products loaded!"),
+        Err(e) => println!("Error loading products: {}", e),        
     }
 
     HttpServer::new(|| {

@@ -1,6 +1,6 @@
 use super::product_category::ProductCategory;
 
-#[derive(serde::Serialize, Debug)]
+#[derive(serde::Serialize, Debug, Clone)]
 pub struct Product {
     pub id: Option<i32>,
     pub name: String,

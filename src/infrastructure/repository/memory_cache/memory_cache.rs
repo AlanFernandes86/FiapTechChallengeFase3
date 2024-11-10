@@ -1,24 +1,34 @@
-use cached::UnboundCache;
-use std::sync::Mutex;
+use cached::{Cached, UnboundCache};
+use once_cell::sync::Lazy;
+use std::{collections::HashMap, sync::Mutex};
+use crate::domain::entities::product::Product;
 
-struct MemoryCache {
-    cache: Mutex<UnboundCache<String, String>>,
+pub struct MemoryCache {
+    products_cache: Mutex<UnboundCache<String, HashMap<i32, Product>>>,
 }
 
 impl MemoryCache {
     fn new() -> Self {
         Self {
-            cache: Mutex::new(UnboundCache::new()),
+            products_cache: Mutex::new(UnboundCache::new()),
         }
     }
 
-    fn set(&self, key: String, value: String) {
-        let mut cache = self.cache.lock().unwrap();
+    pub fn set(&self, key: String, value: HashMap<i32, Product>) {
+        let mut cache = self.products_cache.lock().unwrap();
         cache.cache_set(key, value);
     }
 
-    fn get(&self, key: &str) -> Option<String> {
-        let cache = self.cache.lock().unwrap();
-        cache.cache_get(key).cloned()
+    pub fn get(&self, key: String) -> Option<HashMap<i32, Product>> {
+        let mut cache = self.products_cache.lock().unwrap();
+        cache.cache_get(&key).cloned()
+    }
+}
+
+static INSTANCE: Lazy<MemoryCache> = Lazy::new(|| MemoryCache::new());
+
+impl MemoryCache {
+    pub fn instance() -> &'static MemoryCache {
+        &INSTANCE
     }
 }

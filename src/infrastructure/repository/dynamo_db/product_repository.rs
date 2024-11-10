@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::error::Error;
 use std::sync::Arc;
 use async_trait::async_trait;
@@ -26,60 +27,64 @@ impl DynamoDbProductRepository {
 
 #[async_trait]
 impl ProductRepository for DynamoDbProductRepository {
-    async fn get_product_by_id(&self, product_id: i32) -> Result<Option<Product>, Box<dyn Error>> {
+    async fn get_products(&self) -> Result<Option<HashMap<i32, Product>>, Box<dyn Error>> {
         let result = self.client
-            .query()
+            .scan()
             .table_name("product")
-            .index_name("sk-index")
-            .key_condition_expression("sk = :product_id")
-            .expression_attribute_values(":product_id", AttributeValue::S(format!("PRODUCT#{}", product_id).to_string()))
             .send()
             .await;
-
+        
         match result {
             Ok(output) => {
                 if output.items.is_none() {
                     return Ok(None);
                 }
                 if let Some(items) = output.items {
+                    let mut products: Vec<(i32, Product)> = vec![];
+                    let mut product_categories: HashMap<i32, ProductCategory> = HashMap::new();
+
                     for item in items {
                         if let Some(sk) = item.get("sk") {
-                            if sk.as_s().map(|s| s.as_str()) == Ok(format!("PRODUCT#{}", product_id).as_str()) {
-                                let mut product = DbProduct::from_item(item.clone()).into_domain();
-                                
-                                let category_id = item.get("pk")
-                                    .and_then(|v| v.as_s().ok())
-                                    .unwrap();             
-
-                                let product_category_item = self.client
-                                    .get_item()
-                                    .table_name("product")
-                                    .key("pk", AttributeValue::S(category_id.to_string()))
-                                    .key("sk", AttributeValue::S("CATEGORY#metadata".to_string()))
-                                    .send()
-                                    .await;
-                                
-                                match product_category_item {
-                                    Ok(output) => {
-                                        if let Some(item) = output.item {
-                                            product.product_category = DbProductCategory::from_item(item).into_domain();
-                                        }
-                                    },
-                                    Err(e) => {
-                                        let error_message = format!(
-                                            "Error querying DynamoDB: {:?}",
-                                            e.as_service_error()
-                                        );
-                                        return Err(Box::new(std::io::Error::new(std::io::ErrorKind::Other, error_message)));
-                                    }                                    
+                            match sk.as_s().map(|s| s.as_str()) {
+                                Ok("CATEGORY#metadata") => {
+                                    println!("Product category found");
+                                    let product_category_db = DbProductCategory::from_item(item);
+                                    let product_category = ProductCategory {
+                                        id: product_category_db.id,
+                                        name: product_category_db.name,
+                                        description: product_category_db.description,
+                                    };
+                                    product_categories.insert(product_category_db.id, product_category);
                                 }
-
-                                return Ok(Some(product));
+                                Ok(_) => {
+                                    println!("Product found");
+                                    let category_id = item.get("pk")
+                                        .and_then(|v| v.as_s().ok())
+                                        .and_then(|v| v.split("#").last())
+                                        .and_then(|v| v.parse::<i32>().ok())
+                                        .unwrap_or_default();
+                                    let product = DbProduct::from_item(item).into_domain();
+                                    products.push((category_id, product));
+                                },
+                                Err(_) => {
+                                    return Err(Box::new(std::io::Error::new(std::io::ErrorKind::Other, "Error parsing product category")));
+                                }
                             }
                         }
                     }
+
+                    for product in products.iter_mut() {
+                        if let Some(product_category) = product_categories.get(&product.0) {
+                            product.1.product_category = product_category.clone();
+                        }
+                    }
+
+                    let products_with_id: HashMap<i32, Product> = products.into_iter().map(|(_, v)| (v.id.unwrap(), v)).collect();
+
+                     Ok(Some(products_with_id))
+                } else {
+                    Ok(None)
                 }
-                Ok(None)
             },
             Err(e) => {
                 let error_message = format!(
@@ -87,8 +92,8 @@ impl ProductRepository for DynamoDbProductRepository {
                     e.as_service_error()
                 );
                 Err(Box::new(std::io::Error::new(std::io::ErrorKind::Other, error_message)))
-            }            
-        }      
+            }
+        }
     }
 
     async fn get_products_by_category(&self, product_category_id: i32) -> Result<Option<Vec<Product>>, Box<dyn Error>> {

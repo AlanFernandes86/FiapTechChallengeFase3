@@ -1,4 +1,4 @@
-#[derive(serde::Serialize, Debug)]
+#[derive(serde::Serialize, Debug, Clone)]
 pub struct ProductCategory {
     pub id: i32,
     pub name: String,

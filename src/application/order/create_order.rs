@@ -1,23 +1,29 @@
 use std::error::Error;
 
-use crate::domain::{
-    entities::order::Order,
-    enums::order_status::EnOrderStatus,
-    repository::{client_repository::ClientRepository, order_repository::OrderRepository, product_repository::ProductRepository}
+use crate::{
+    domain::{
+        entities::order::Order,
+        enums::order_status::EnOrderStatus,
+        repository::{client_repository::ClientRepository, order_repository::OrderRepository, product_repository::ProductRepository}
+    }, 
+    infrastructure::repository::memory_cache::memory_cache::MemoryCache
 };
 
-pub struct CreateOrderUseCase {
+pub struct CreateOrderUseCase<'a> {
     order_repository: Box<dyn OrderRepository>,
     client_repository: Box<dyn ClientRepository>,
     product_repository: Box<dyn ProductRepository>,
+    memory_cache: &'a MemoryCache
 }
 
-impl CreateOrderUseCase {
+impl<'a> CreateOrderUseCase<'a> {
     pub fn new(order_repository: Box<dyn OrderRepository>, client_repository: Box<dyn ClientRepository>, product_repository: Box<dyn ProductRepository>) -> Self {
+        let memory_cache = MemoryCache::instance();
         Self {
             order_repository,
             client_repository,
-            product_repository
+            product_repository,
+            memory_cache
         }
     }
 
@@ -36,17 +42,35 @@ impl CreateOrderUseCase {
             order.client = client;
         }
 
+        let products_map = self.memory_cache.get("products".to_string());
+        let products = match products_map {
+            Some(products) => products,
+            None => {
+                let products_result = self.product_repository.get_products().await?;
+                match products_result {
+                    Some(products) => {
+                        self.memory_cache.set("products".to_string(), products.clone());
+                        products
+                    },
+                    None => return Err("Products not found!".into())                    
+                }
+            }
+        };
+        
         for order_product in order.order_products.iter_mut() {
-            let product_result = self.product_repository.get_product_by_id(order_product.product_id).await;
-            let product = match product_result {
-                Ok(product) => product.unwrap(),
-                Err(e) => return Err(format!("Error getting product by id: {:?}", e).into())
-            };
-            
-            order_product.name = product.name;
-            order_product.description = product.description;
-            order_product.image_url = product.image_url;
-            order_product.product_category = product.product_category;
+            let id = order_product.product_id;
+            let product_option = products.get(&id);
+            match product_option {
+                Some(product) => {
+                    order_product.name = product.name.clone();
+                    order_product.description = product.description.clone();
+                    order_product.image_url = product.image_url.clone();
+                    order_product.product_category = product.product_category.clone();
+                },
+                None => {
+                    return Err("Product not found!".into());
+                }                
+            }            
         }
 
         self.order_repository.create_order(order).await
