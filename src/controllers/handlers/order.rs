@@ -1,23 +1,21 @@
 use std::sync::Arc;
-use actix_web::{web, get, post, patch, HttpResponse, Responder};
+use actix_web::{delete, get, patch, post, put, web, HttpResponse, Responder};
 use crate::{
-    application::order::{
+    application::{order::{
         create_order::CreateOrderUseCase,
         get_order_by_id::GetOrderByIdUseCase,
         get_orders_by_status::GetOrdersByStatusUseCase,
         update_order_status::UpdateOrderStatusUseCase
-    }, 
-    controllers::models::order::{ 
+    }, order_product::{delete_order_product::DeleteOrderProductUseCase, put_order_product::PutOrderProductUseCase}}, 
+    controllers::models::{order::{ 
         CreateOrderDTO,
         GetOrdersQuery,
         UpdateOrderStatusDTO 
-    }, 
+    }, order_product::PutOrderProductDTO}, 
     domain::errors::invalid_order_status_update_error::InvalidOrderStatusUpdateError,
-    infrastructure::{messaging::kafka::kafka_producer::KafkaProducer, repository::{dynamo_db::{common::dynamo_db_factory::DynamoDbFactory, order_repository::DynamoDbOrderRepository}, mssql::{
-        common::mssql_pool::SqlServerPool,
-        order_product_repository::MssqlOrderProductRepository,
-        order_repository::MssqlOrderRepository
-    }}}};
+    infrastructure::{messaging::kafka::kafka_producer::KafkaProducer, repository::dynamo_db::{
+        common::dynamo_db_factory::DynamoDbFactory, order_product_repository::DynamoDbOrderProductRepository, order_repository::DynamoDbOrderRepository},
+    }};
 
 #[get("/{orderId}")]
 pub async fn get_order_by_id(path: web::Path<i32>) -> impl Responder {
@@ -115,5 +113,41 @@ pub async fn update_order_status(update_status_dto: web::Json<UpdateOrderStatusD
             }
         },
         Err(_) => return HttpResponse::InternalServerError().body("Database connection error")
+    }
+}
+
+#[delete("/{order_id}/product/{order_product_id}")]
+pub async fn delete_order_product(path: web::Path<(i32, i32)>) -> impl Responder {
+    let (order_id, order_product_id) = path.into_inner();
+    let get_instance_result = DynamoDbFactory::get_instance().await;
+    match get_instance_result {
+        Ok(dynamo_db_client)=> {
+            let repo = DynamoDbOrderProductRepository::new(dynamo_db_client.clone());
+            let use_case = DeleteOrderProductUseCase::new(Box::new(repo));
+            let result = use_case.handle(order_id, order_product_id).await;
+            match result {
+                Ok(_) => HttpResponse::Ok().finish(),
+                Err(_) => HttpResponse::InternalServerError().body("Internal server error")
+            }
+        },
+        Err(_) => HttpResponse::InternalServerError().body("Database connection error")
+    }
+}
+
+#[put("/product")]
+pub async fn put_order_product(order_product_dto: web::Json<PutOrderProductDTO>) -> impl Responder {
+    let order_product = order_product_dto.into_inner().into();
+    let get_instance_result = DynamoDbFactory::get_instance().await;
+    match get_instance_result {
+        Ok(dynamo_db_client)=> {
+            let repo = DynamoDbOrderProductRepository::new(dynamo_db_client.clone());
+            let use_case = PutOrderProductUseCase::new(Box::new(repo));
+            let result = use_case.handle(order_product).await;
+            match result {
+                Ok(_) => HttpResponse::Ok().finish(),
+                Err(_) => HttpResponse::InternalServerError().body("Internal server error")
+            }
+        },
+        Err(_) => HttpResponse::InternalServerError().body("Database connection error")
     }
 }

@@ -1,5 +1,5 @@
 use std::{error::Error, sync::Arc};
-use crate::domain::{errors::invalid_order_status_update_error::InvalidOrderStatusUpdateError, messaging::event_publisher::EventPublisher, repository::{order_product_repository::OrderProductRepository, order_repository::OrderRepository}};
+use crate::domain::{errors::invalid_order_status_update_error::InvalidOrderStatusUpdateError, messaging::event_publisher::EventPublisher, repository::order_repository::OrderRepository};
 
 pub struct UpdateOrderStatusUseCase {
     order_repository: Arc<dyn OrderRepository>,

@@ -1,4 +1,4 @@
-use aws_sdk_dynamodb::{operation::import_table, types::AttributeValue};
+use aws_sdk_dynamodb::types::AttributeValue;
 
 use crate::domain::entities::{order_product::OrderProduct, product_category::ProductCategory};
 

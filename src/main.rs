@@ -21,7 +21,6 @@ async fn main() -> std::io::Result<()> {
             .configure(controllers::routes::product::init)
             .configure(controllers::routes::product_category::init)
             .configure(controllers::routes::order::init)
-            .configure(controllers::routes::order_product::init)
             .configure(controllers::routes::payment::init)
             .route("/", web::get().to(|| async { HttpResponse::Ok().body("Hello FiapTechChallenge Fase 2!") }))
     })

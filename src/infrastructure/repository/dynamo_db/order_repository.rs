@@ -1,18 +1,14 @@
 use std::collections::HashMap;
 use std::error::Error;
 use std::sync::Arc;
-use std::vec;
 use async_trait::async_trait;
-use aws_sdk_dynamodb::types::{AttributeValue, KeysAndAttributes, PutRequest, WriteRequest};
+use aws_sdk_dynamodb::types::AttributeValue;
 use aws_sdk_dynamodb::Client;
 use futures::future::join_all;
-use crate::domain::entities::order::{Order, OrderPayment, OrderStatus};
-use crate::domain::entities::order_product::OrderProduct;
-use crate::domain::enums::order_status::EnOrderStatus;
+use crate::domain::entities::order::Order;
 use crate::domain::repository::order_repository::OrderRepository;
 use crate::infrastructure::repository::dynamo_db::common::dynamo_db_counters::DynamoDbCounters;
 use crate::infrastructure::repository::dynamo_db::entity::db_order::DbOrder;
-use crate::infrastructure::repository::dynamo_db::entity::db_order_product::DbOrderProduct;
 
 pub struct DynamoDbOrderRepository {
     client: Arc<Client>,

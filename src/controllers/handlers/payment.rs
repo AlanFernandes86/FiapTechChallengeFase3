@@ -7,7 +7,7 @@ use crate::{
     controllers::models::payment::{MercadoPagoNotificationDTO, StartPaymentDTO}, 
     domain::enums::payment_method::EnPaymentMethod, 
     infrastructure::{messaging::kafka::kafka_producer::KafkaProducer, 
-    repository::mssql::{common::mssql_pool::SqlServerPool, order_product_repository::MssqlOrderProductRepository, order_repository::MssqlOrderRepository, payment_repository::MssqlPaymentRepository}, 
+    repository::mssql::{common::mssql_pool::SqlServerPool, order_repository::MssqlOrderRepository, payment_repository::MssqlPaymentRepository}, 
     service::mercado_pago::mercado_pago_service::MercadoPagoService}
 };
 

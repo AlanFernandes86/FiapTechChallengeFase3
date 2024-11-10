@@ -12,7 +12,7 @@ impl DeleteOrderProductUseCase {
         }
     }
 
-    pub async fn handle(&self, order_product_id: i32) -> Result<(), Box<dyn Error>> {
-        self.order_product_repository.delete_order_product(order_product_id).await
+    pub async fn handle(&self, order_id: i32, order_product_id: i32) -> Result<(), Box<dyn Error>> {
+        self.order_product_repository.delete_order_product(order_id, order_product_id).await
     }
 }
