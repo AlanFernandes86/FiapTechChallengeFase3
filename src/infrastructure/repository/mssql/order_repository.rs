@@ -129,7 +129,7 @@ impl OrderRepository for MssqlOrderRepository {
         )
         .bind(order.order_status.id)
         .bind(order.client.cpf)
-        .bind(order.order_client_name)
+        .bind(order.order_name)
         .fetch_one(&mut transaction)
         .await;
 

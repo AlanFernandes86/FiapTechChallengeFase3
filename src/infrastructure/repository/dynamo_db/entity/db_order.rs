@@ -1,6 +1,6 @@
 use aws_sdk_dynamodb::types::AttributeValue;
 use crate::domain::entities::order::{Order, OrderPayment, OrderStatus};
-use crate::domain::entities::client::Client;
+use crate::domain::entities::user::User;
 use crate::domain::entities::order_product::OrderProduct;
 use crate::domain::enums::order_status::EnOrderStatus;
 use crate::domain::enums::payment_status::EnPaymentStatus;
@@ -12,6 +12,7 @@ pub struct DbOrder {
     pub client_name: String,
     pub client_cpf: String,
     pub client_email: String,
+    pub user_group: String,
     pub order_status_id: i32,
     pub order_payment_status_id: Option<i32>,
     pub order_products: Vec<DbOrderProduct>
@@ -26,12 +27,12 @@ impl DbOrder {
             .and_then(|v| v.parse::<i32>().ok())
             .unwrap_or_default();
 
-        let client_name = item.get("client_name")
+        let order_client_name = item.get("order_name")
             .and_then(|v| v.as_s().ok())
             .map(String::from)
             .unwrap_or_default();
 
-        let order_client_name = item.get("order_name")
+        let client_name = item.get("client_name")
             .and_then(|v| v.as_s().ok())
             .map(String::from)
             .unwrap_or_default();
@@ -45,6 +46,11 @@ impl DbOrder {
             .and_then(|v| v.as_s().ok())
             .map(String::from)
             .unwrap_or_default();
+
+        let user_group = item.get("user_group")
+            .and_then(|v| v.as_n().ok())
+            .map(|v| v.to_string())
+            .unwrap_or_default();       
 
         let order_status_id = item.get("order_status_id")
             .and_then(|v| v.as_n().ok())
@@ -64,7 +70,7 @@ impl DbOrder {
             })
             .unwrap_or_default();
 
-        Self { order_id, client_name, order_name: order_client_name, client_cpf, client_email, order_status_id, order_payment_status_id, order_products }
+        Self { order_id, client_name, order_name: order_client_name, client_cpf, client_email, user_group, order_status_id, order_payment_status_id, order_products }
     }    
 }
 
@@ -73,10 +79,11 @@ impl From<DbOrder> for Order {
         Order {
             id: db_order.order_id,
             order_name: db_order.order_name,
-            client: Client {
+            client: User {
                 cpf: db_order.client_cpf,
                 name: db_order.client_name,
-                email: db_order.client_email
+                email: db_order.client_email,
+                group: db_order.user_group
             },
             order_status: OrderStatus {
                 id: db_order.order_status_id,

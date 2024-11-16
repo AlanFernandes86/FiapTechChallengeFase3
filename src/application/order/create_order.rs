@@ -4,20 +4,20 @@ use crate::{
     domain::{
         entities::order::Order,
         enums::order_status::EnOrderStatus,
-        repository::{client_repository::ClientRepository, order_repository::OrderRepository, product_repository::ProductRepository}
+        repository::{user_repository::UserRepository, order_repository::OrderRepository, product_repository::ProductRepository}
     }, 
     infrastructure::repository::memory_cache::memory_cache::MemoryCache
 };
 
 pub struct CreateOrderUseCase<'a> {
     order_repository: Box<dyn OrderRepository>,
-    client_repository: Box<dyn ClientRepository>,
+    client_repository: Box<dyn UserRepository>,
     product_repository: Box<dyn ProductRepository>,
     memory_cache: &'a MemoryCache
 }
 
 impl<'a> CreateOrderUseCase<'a> {
-    pub fn new(order_repository: Box<dyn OrderRepository>, client_repository: Box<dyn ClientRepository>, product_repository: Box<dyn ProductRepository>) -> Self {
+    pub fn new(order_repository: Box<dyn OrderRepository>, client_repository: Box<dyn UserRepository>, product_repository: Box<dyn ProductRepository>) -> Self {
         let memory_cache = MemoryCache::instance();
         Self {
             order_repository,
@@ -33,7 +33,7 @@ impl<'a> CreateOrderUseCase<'a> {
         }
 
         if order.client.cpf.len() == 11 {
-            let client_result = self.client_repository.get_client_by_cpf(order.client.cpf).await;
+            let client_result = self.client_repository.get_user_by_cpf(order.client.cpf).await;
             let client = match client_result {
                 Ok(client) => client.unwrap(),
                 Err(_) => return Err("Client not found!".into())

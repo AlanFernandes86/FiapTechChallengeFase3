@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::error::Error;
 use std::sync::Arc;
 use async_trait::async_trait;
@@ -18,6 +19,28 @@ impl MssqlProductRepository {
 
 #[async_trait]
 impl ProductRepository for MssqlProductRepository {
+    async fn get_products(&self) -> Result<Option<HashMap<i32, Product>>, Box<dyn Error>> {
+        let result = sqlx::query_as::<_, DbProduct>(
+            "SELECT p.id, p.name, p.description, p.price, p.image_url, p.product_category_id, pc.name as product_category_name, pc.description as product_category_description
+            FROM TechChallenge.dbo.product p
+            JOIN TechChallenge.dbo.product_category pc ON p.product_category_id = pc.id"
+        )
+        .fetch_all(&*self.pool)
+        .await;
+
+        match result {
+            Ok(vec) => {
+                if vec.is_empty() {
+                    Ok(None)
+                } else {
+                    let product_map: HashMap<i32, Product> = vec.into_iter().map(|db_product| (db_product.id, db_product.into())).collect();
+                    Ok(Some(product_map))
+                }
+            },
+            Err(e) => Err(Box::new(e)),
+        }
+    }
+    
     async fn get_products_by_category(&self, product_category_id: i32) -> Result<Option<Vec<Product>>, Box<dyn Error>> {
         let result = sqlx::query_as::<_, DbProduct>(
             "SELECT p.id, p.name, p.description, p.price, p.image_url, p.product_category_id, pc.name as product_category_name, pc.description as product_category_description

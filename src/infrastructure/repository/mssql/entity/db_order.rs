@@ -1,4 +1,4 @@
-use crate::domain::entities::{client::Client, order::{Order, OrderPayment, OrderStatus}};
+use crate::domain::entities::{order::{Order, OrderPayment, OrderStatus}, user::User};
 
 #[derive(sqlx::FromRow)]
 pub struct DbOrder {
@@ -19,11 +19,12 @@ impl From<DbOrder> for Order {
     fn from(db_order: DbOrder) -> Self {
         Order {
             id: db_order.id,
-            order_client_name: db_order.order_client_name,
-            client: Client {
+            order_name: db_order.order_client_name,
+            client: User {
                 cpf: db_order.client_cpf,
                 name: db_order.client_name,
-                email: db_order.client_email
+                email: db_order.client_email,
+                group: "".to_string()
             },
             order_status: OrderStatus {
                 id: db_order.order_status_id,

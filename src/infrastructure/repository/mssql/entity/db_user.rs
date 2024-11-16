@@ -1,19 +1,20 @@
-use crate::domain::entities::client::Client;
+use crate::domain::entities::user::User;
 
 #[derive(sqlx::FromRow)]
-pub struct DbClient {
+pub struct DbUser {
 	pub cpf: String,
 	pub name: String,
 	pub email: String
 }
 
 // Implementando o From trait para o Client
-impl From<DbClient> for Client {
-    fn from(tb_client: DbClient) -> Self {
-        Client {
+impl From<DbUser> for User {
+    fn from(tb_client: DbUser) -> Self {
+        User {
             cpf: tb_client.cpf,
             name: tb_client.name,
             email: tb_client.email,
+            group: "".to_string()
         }
     }
 }

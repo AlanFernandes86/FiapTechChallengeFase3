@@ -1,13 +1,13 @@
 use actix_web::{web, get, post, HttpResponse, Responder};
-use crate::application::client::get_client_by_cpf::GetClientByCpfUseCase;
-use crate::application::client::set_client::SetClientUseCase;
-use crate::domain::errors::client_already_exists_error::ClientAlreadyExistsError;
-use crate::infrastructure::repository::dynamo_db::client_repository::DynamoDbClientRepository;
+use crate::application::user::get_user_by_cpf::GetUserByCpfUseCase;
+use crate::application::user::set_user::SetUserUseCase;
+use crate::domain::errors::user_already_exists_error::UserAlreadyExistsError;
+use crate::infrastructure::repository::dynamo_db::user_repository::DynamoDbUserRepository;
 use crate::infrastructure::repository::dynamo_db::common::dynamo_db_factory::DynamoDbFactory;
-use crate::controllers::models::client::ClientDTO;
+use crate::controllers::models::user::UserDTO;
 
 #[get("/{cpf}")]
-pub async fn get_client_by_cpf(path: web::Path<String>) -> impl Responder {
+pub async fn get_user_by_cpf(path: web::Path<String>) -> impl Responder {
     // Extrai o CPF do path
     let cpf = path.into_inner();    
     let get_instance_result = DynamoDbFactory::get_instance().await;    
@@ -15,9 +15,9 @@ pub async fn get_client_by_cpf(path: web::Path<String>) -> impl Responder {
     match get_instance_result {
         Ok(dynamodb_client) => {
             // Cria nova instancia do repositorio
-            let repo = DynamoDbClientRepository::new(dynamodb_client.clone());
+            let repo = DynamoDbUserRepository::new(dynamodb_client.clone());
             // Cria nova instancia do use case
-            let use_case = GetClientByCpfUseCase::new(Box::new(repo));
+            let use_case = GetUserByCpfUseCase::new(Box::new(repo));
             // Chama o use case
             let result = use_case.handle(cpf).await;
             // Lida com o resultado e retorna a resposta    
@@ -36,19 +36,19 @@ pub async fn get_client_by_cpf(path: web::Path<String>) -> impl Responder {
 }
 
 #[post("")]
-pub async fn set_client(client_dto: web::Json<ClientDTO>) -> impl Responder {
-    let client = client_dto.into_inner().into();
+pub async fn set_user(user_dto: web::Json<UserDTO>) -> impl Responder {
+    let client = user_dto.into_inner().into();
     let get_instance_result = DynamoDbFactory::get_instance().await;
     match get_instance_result {
         Ok(dynamodb_client)=> {
-            let repo = DynamoDbClientRepository::new(dynamodb_client.clone());
-            let use_case = SetClientUseCase::new(Box::new(repo));
+            let repo = DynamoDbUserRepository::new(dynamodb_client.clone());
+            let use_case = SetUserUseCase::new(Box::new(repo));
             let result = use_case.handle(client).await;
         
             match result {
                 Ok(_) => HttpResponse::Created().finish(),
                 Err(e) => {
-                    if let Some(_invalid_status) = e.downcast_ref::<ClientAlreadyExistsError>() {
+                    if let Some(_invalid_status) = e.downcast_ref::<UserAlreadyExistsError>() {
                         HttpResponse::BadRequest().body(e.to_string())
                     } else {
                         HttpResponse::InternalServerError().body(format!("Internal server error: {e}"))

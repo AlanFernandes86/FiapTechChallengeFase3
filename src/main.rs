@@ -26,7 +26,7 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(|| {
         App::new()
-            .configure(controllers::routes::client::init)
+            .configure(controllers::routes::user::init)
             .configure(controllers::routes::product::init)
             .configure(controllers::routes::product_category::init)
             .configure(controllers::routes::order::init)

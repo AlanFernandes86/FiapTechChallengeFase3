@@ -1,6 +1,7 @@
 #[derive(serde::Serialize, Debug)]
-pub struct Client {
+pub struct User {
 	pub cpf: String,
 	pub name: String,
-	pub email: String
+	pub email: String,
+	pub group: String
 }

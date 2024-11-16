@@ -1,2 +1,2 @@
 pub mod invalid_order_status_update_error;
-pub mod client_already_exists_error;
+pub mod user_already_exists_error;
