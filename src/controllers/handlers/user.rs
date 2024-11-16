@@ -28,7 +28,7 @@ pub async fn get_user_by_cpf(path: web::Path<String>) -> impl Responder {
                         None => HttpResponse::NotFound().body("Client not found")
                     }
                 },
-                Err(_) => HttpResponse::InternalServerError().body("Internal server error")
+                Err(e) => HttpResponse::InternalServerError().body(format!("Internal server error: {e}"))
             }
         },
         Err(_) => return HttpResponse::InternalServerError().body("Database connection error")

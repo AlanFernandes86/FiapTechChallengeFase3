@@ -11,10 +11,26 @@ pub struct DbUser {
 
 impl DbUser {
     pub fn from_item(item: HashMap<String, AttributeValue>) -> Self {
-        let cpf = item.get("cpf").unwrap().as_s().unwrap().to_string();
-        let name = item.get("name").unwrap().as_s().unwrap().to_string();
-        let email = item.get("email").unwrap().as_s().unwrap().to_string();
-        let group = item.get("group").unwrap().as_s().unwrap().to_string();
+        let cpf = item.get("cpf")
+        .and_then(|v| v.as_s().ok())
+        .map(String::from)
+        .unwrap_or_default();
+    
+        let name = item.get("name")
+        .and_then(|v| v.as_s().ok())
+        .map(String::from)
+        .unwrap_or_default();
+
+        let email = item.get("email")
+        .and_then(|v| v.as_s().ok())
+        .map(String::from)
+        .unwrap_or_default();
+
+        let group = item.get("group")
+        .and_then(|v| v.as_s().ok())
+        .map(String::from)
+        .unwrap_or_default();
+
         DbUser { cpf, name, email, group }
     }
 

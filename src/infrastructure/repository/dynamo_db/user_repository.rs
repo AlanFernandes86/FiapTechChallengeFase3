@@ -5,6 +5,7 @@ use aws_sdk_dynamodb::error::SdkError;
 use aws_sdk_dynamodb::types::AttributeValue;
 use aws_sdk_dynamodb::error::ProvideErrorMetadata;
 use aws_sdk_dynamodb::Client as DynamoClient;
+use crate::domain::constants::user_group::UserGroup;
 use crate::domain::errors::user_already_exists_error::UserAlreadyExistsError;
 use crate::domain::repository::user_repository::UserRepository;
 use crate::domain::entities::user::User;
@@ -25,8 +26,9 @@ impl UserRepository for DynamoDbUserRepository {
     async fn get_user_by_cpf(&self, cpf: String) -> Result<Option<User>, Box<dyn Error>> {
         let result = self.client
         .get_item()
-        .table_name("client")
+        .table_name("user")
         .key("cpf", AttributeValue::S(cpf))
+        .key("group", AttributeValue::S(UserGroup::CUSTOMER.to_string()))
         .send()
         .await;
 
@@ -39,8 +41,9 @@ impl UserRepository for DynamoDbUserRepository {
                 let client = DbUser::from_item(item).into();
                 Ok(Some(client))
             },
-            Err(e) => {
-                Err(Box::new(e))
+            Err(err) => {
+                let error_message = format!("Service error querying DynamoDB: {:?}", err);
+                Err(Box::new(std::io::Error::new(std::io::ErrorKind::Other, error_message)))
             }
         }
     }
@@ -56,7 +59,7 @@ impl UserRepository for DynamoDbUserRepository {
       
       let result = self.client
       .put_item()
-      .table_name("client")
+      .table_name("user")
       .set_item(Some(item))
       .condition_expression("attribute_not_exists(cpf)")
       .send()
