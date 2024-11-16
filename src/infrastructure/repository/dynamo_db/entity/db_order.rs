@@ -8,7 +8,7 @@ use super::db_order_product::DbOrderProduct;
 
 pub struct DbOrder {
     pub order_id: i32,
-    pub order_client_name: String,
+    pub order_name: String,
     pub client_name: String,
     pub client_cpf: String,
     pub client_email: String,
@@ -31,7 +31,7 @@ impl DbOrder {
             .map(String::from)
             .unwrap_or_default();
 
-        let order_client_name = item.get("order_client_name")
+        let order_client_name = item.get("order_name")
             .and_then(|v| v.as_s().ok())
             .map(String::from)
             .unwrap_or_default();
@@ -64,7 +64,7 @@ impl DbOrder {
             })
             .unwrap_or_default();
 
-        Self { order_id, client_name, order_client_name, client_cpf, client_email, order_status_id, order_payment_status_id, order_products }
+        Self { order_id, client_name, order_name: order_client_name, client_cpf, client_email, order_status_id, order_payment_status_id, order_products }
     }    
 }
 
@@ -72,7 +72,7 @@ impl From<DbOrder> for Order {
     fn from(db_order: DbOrder) -> Self {
         Order {
             id: db_order.order_id,
-            order_client_name: db_order.order_client_name,
+            order_name: db_order.order_name,
             client: Client {
                 cpf: db_order.client_cpf,
                 name: db_order.client_name,

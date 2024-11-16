@@ -101,7 +101,7 @@ impl OrderRepository for DynamoDbOrderRepository {
         order_item.insert("pk".to_string(), AttributeValue::S(format!("ORDER#{}", order_id)));
         order_item.insert("sk".to_string(), AttributeValue::S("ORDER#details".to_string()));
         order_item.insert("order_id".to_string(), AttributeValue::N(order_id.to_string()));
-        order_item.insert("order_client_name".to_string(), AttributeValue::S(order.client.name.to_string()));
+        order_item.insert("order_name".to_string(), AttributeValue::S(order.order_name.to_string()));
         order_item.insert("client_name".to_string(), AttributeValue::S(order.client.name.to_string()));
         order_item.insert("client_cpf".to_string(), AttributeValue::S(order.client.cpf.to_string()));
         order_item.insert("client_email".to_string(), AttributeValue::S(order.client.email.to_string()));

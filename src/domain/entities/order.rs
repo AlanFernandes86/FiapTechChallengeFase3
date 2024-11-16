@@ -3,7 +3,7 @@ use super::{client::Client, order_product::OrderProduct};
 #[derive(serde::Serialize, Debug)]
 pub struct Order {
     pub id: i32,
-    pub order_client_name: String,
+    pub order_name: String,
     pub client: Client,
     pub order_status: OrderStatus,
     pub order_payment: OrderPayment,

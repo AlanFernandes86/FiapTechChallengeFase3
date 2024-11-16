@@ -14,7 +14,7 @@ pub struct UpdateOrderStatusDTO {
 
 #[derive(serde::Deserialize, Debug)]
 pub struct CreateOrderDTO {
-    pub client_cpf: String,
+    pub client_cpf: Option<String>,
     pub client_name: String,
     pub products: Vec<OrderProductDTO>
 }
@@ -30,7 +30,7 @@ impl From<CreateOrderDTO> for Order {
     fn from(client_dto: CreateOrderDTO) -> Self {
         Order {
             id: 0,
-            order_client_name: client_dto.client_name.clone(),
+            order_name: client_dto.client_name.clone(),
             order_status: crate::domain::entities::order::OrderStatus {
                 id: crate::domain::enums::order_status::EnOrderStatus::Created as i32,
                 name: format!("{:?}", crate::domain::enums::order_status::EnOrderStatus::Created)
@@ -40,12 +40,12 @@ impl From<CreateOrderDTO> for Order {
                 name: None
             },
             client: Client {
-                cpf: client_dto.client_cpf,
+                cpf: client_dto.client_cpf.clone().unwrap_or_default(),
                 name: client_dto.client_name,
                 email: "".to_string(),
             },
             order_products: client_dto.products.into_iter().map(|product| OrderProduct {
-                order_product_id: Some(0),
+                order_product_id: None,
                 order_id: 0,
                 name: "".to_string(),
                 description: "".to_string(),
