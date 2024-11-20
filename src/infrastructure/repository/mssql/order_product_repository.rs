@@ -50,10 +50,11 @@ impl OrderProductRepository for MssqlOrderProductRepository {
         let result = sqlx::query(
             r#"
             DELETE FROM TechChallenge.dbo.order_product
-            WHERE id = @p1
+            WHERE id = @p1 AND order_id = @p2;
             "#
         )
         .bind(order_product_id)
+        .bind(order_id)
         .execute(&*self.pool)
         .await;
 
