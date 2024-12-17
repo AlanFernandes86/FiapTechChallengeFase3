@@ -1,14 +1,14 @@
 #[derive(Debug)]
-pub enum PaymentMethod {
+pub enum EnPaymentMethod {
     MercadoPago = 1,
     PicPay = 2
 }
 
-impl PaymentMethod {
-    pub fn from_id(id: i32) -> Result<PaymentMethod, String> {
+impl EnPaymentMethod {
+    pub fn from_id(id: i32) -> Result<EnPaymentMethod, String> {
         match id {
-            1 => Ok(PaymentMethod::MercadoPago),
-            2 => Ok(PaymentMethod::PicPay),
+            1 => Ok(EnPaymentMethod::MercadoPago),
+            2 => Ok(EnPaymentMethod::PicPay),
             _ => Err(format!("PaymentMethod with id [{}] does not exist.", id))     
         }
     }

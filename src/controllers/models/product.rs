@@ -8,7 +8,8 @@ pub struct ProductDTO {
     pub name: String,
     pub description: String,
     pub price: f64,
-    pub image_url: String
+    pub image_url: String,
+    pub available: bool
 }
 
 #[derive(Deserialize)]
@@ -28,7 +29,8 @@ impl From<ProductDTO> for crate::domain::entities::product::Product {
             name: product_dto.name,
             description: product_dto.description,
             price: product_dto.price,
-            image_url: product_dto.image_url
+            image_url: product_dto.image_url,
+            available: product_dto.available
         }
     }
 }

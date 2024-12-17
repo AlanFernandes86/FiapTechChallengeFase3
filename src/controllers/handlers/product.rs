@@ -8,19 +8,16 @@ use crate::{
             ProductDTO,
             ProductQuery
         },
-        infrastructure::repository::{
-            common::mssql_pool::SqlServerPool,
-            product_repository::MssqlProductRepository
-        }
+        infrastructure::repository::dynamo_db::{common::dynamo_db_factory::DynamoDbFactory, product_repository::DynamoDbProductRepository}
 };
 
 #[get("")]
 pub async fn get_product_by_category_id(category: web::Query<ProductQuery>) -> impl Responder {
     let category_id = category.into_inner().category_id;
-    let arc_pool = SqlServerPool::get_instance().await;    
-    match arc_pool {
-        Ok(pool) => {
-            let repo = MssqlProductRepository::new(pool.clone());
+    let get_instance_result = DynamoDbFactory::get_instance().await;   
+    match get_instance_result {
+        Ok(client) => {
+            let repo = DynamoDbProductRepository::new(client.clone());
             let use_case = GetProductsByCategoryUseCase::new(Box::new(repo));
             let result = use_case.handle(category_id).await;
             match result {
@@ -30,7 +27,7 @@ pub async fn get_product_by_category_id(category: web::Query<ProductQuery>) -> i
                         None => HttpResponse::NotFound().body(format!("No products found with the given category id {category_id}"))
                     }
                 },
-                Err(_) => HttpResponse::InternalServerError().body("Internal server error")
+                Err(e) => HttpResponse::InternalServerError().body("Internal server error ".to_owned() + &e.to_string())
             }
         },
         Err(_) => return HttpResponse::InternalServerError().body("Database connection error")
@@ -40,10 +37,10 @@ pub async fn get_product_by_category_id(category: web::Query<ProductQuery>) -> i
 #[put("")]
 pub async fn put_product(product_dto: web::Json<ProductDTO>) -> impl Responder {
     let product = product_dto.into_inner().into();
-    let arc_pool = SqlServerPool::get_instance().await;
-    match arc_pool {
-        Ok(pool)=> {
-            let repo = MssqlProductRepository::new(pool.clone());
+    let get_instance_result = DynamoDbFactory::get_instance().await;   
+    match get_instance_result {
+        Ok(client) => {
+            let repo = DynamoDbProductRepository::new(client.clone());
             let use_case = PutProductUseCase::new(Box::new(repo));
             let result = use_case.handle(product).await;
         

@@ -3,16 +3,16 @@ use crate::application::product_category::delete_product_category::DeleteProduct
 use crate::application::product_category::get_product_categories::GetProductCategoriesUseCase;
 use crate::application::product_category::put_product_category::PutProductCategoryUseCase;
 use crate::controllers::models::product_category::ProductCategoryDTO;
-use crate::infrastructure::repository::common::mssql_pool::SqlServerPool;
-use crate::infrastructure::repository::product_category_repository::MssqlProductCategoryRepository;
+use crate::infrastructure::repository::dynamo_db::common::dynamo_db_factory::DynamoDbFactory;
+use crate::infrastructure::repository::dynamo_db::product_category_repository::DynamoDbProductCategoryRepository;
 use serde_json::json;
 
 #[get("")]
 pub async fn get_product_categories() -> impl Responder {
-    let arc_pool = SqlServerPool::get_instance().await;    
-    match arc_pool {
-        Ok(pool) => {
-            let repo = MssqlProductCategoryRepository::new(pool.clone());
+    let get_instance_result = DynamoDbFactory::get_instance().await;    
+    match get_instance_result {
+        Ok(client) => {
+            let repo = DynamoDbProductCategoryRepository::new(client.clone());
             let use_case = GetProductCategoriesUseCase::new(Box::new(repo));
             let result = use_case.handle().await;
             match result {
@@ -22,7 +22,7 @@ pub async fn get_product_categories() -> impl Responder {
                         None => HttpResponse::NotFound().body("Product categories not found")
                     }
                 },
-                Err(_) => HttpResponse::InternalServerError().body("Internal server error")
+                Err(e) => HttpResponse::InternalServerError().body("Internal server error ".to_owned() + &e.to_string())
             }
         },
         Err(_) => return HttpResponse::InternalServerError().body("Database connection error")
@@ -32,10 +32,10 @@ pub async fn get_product_categories() -> impl Responder {
 #[put("")]
 pub async fn put_product_category(put_product_category_dto: web::Json<ProductCategoryDTO>) -> impl Responder {
     let product_category = put_product_category_dto.into_inner().into();
-    let arc_pool = SqlServerPool::get_instance().await;
-    match arc_pool {
-        Ok(pool)=> {
-            let repo = MssqlProductCategoryRepository::new(pool.clone());
+    let get_instance_result = DynamoDbFactory::get_instance().await;    
+    match get_instance_result {
+        Ok(client) => {
+            let repo = DynamoDbProductCategoryRepository::new(client.clone());
             let use_case = PutProductCategoryUseCase::new(Box::new(repo));
             let result = use_case.handle(product_category).await;
         
@@ -51,10 +51,10 @@ pub async fn put_product_category(put_product_category_dto: web::Json<ProductCat
 #[delete("/{id}")]
 pub async fn delete_product_category(path: web::Path<i32>) -> impl Responder {
     let id = path.into_inner();
-    let arc_pool = SqlServerPool::get_instance().await;
-    match arc_pool {
-        Ok(pool)=> {
-            let repo = MssqlProductCategoryRepository::new(pool.clone());
+    let get_instance_result = DynamoDbFactory::get_instance().await;    
+    match get_instance_result {
+        Ok(client) => {
+            let repo = DynamoDbProductCategoryRepository::new(client.clone());
             let use_case = DeleteProductCategoryUseCase::new(Box::new(repo));
             let result = use_case.handle(id).await;
         
